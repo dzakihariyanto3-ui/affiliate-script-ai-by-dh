@@ -18,6 +18,7 @@ interface CallGeminiJSONParams {
   apiKey: string;
   prompt: string;
   images?: GeminiImagePart[];
+  model?: string;
 }
 
 function normalizeErrorMessage(error: unknown): string {
@@ -82,18 +83,66 @@ function normalizeErrorMessage(error: unknown): string {
   return `Gagal menghubungi Gemini: ${message.replace(/AIzaSy[A-Za-z0-9_-]+/g, "[API_KEY_HIDDEN]")}`;
 }
 
-const CANDIDATE_MODELS = [
+const DEFAULT_CANDIDATE_MODELS = [
   GEMINI_MODEL,
   "gemini-1.5-flash",
   "gemini-1.5-flash-latest",
   "gemini-2.0-flash",
   "gemini-1.5-pro",
+  "gemini-2.5-flash",
 ];
+
+export async function listCompatibleGeminiModels(apiKey: string): Promise<string[]> {
+  try {
+    const cleanKey = apiKey ? apiKey.trim() : "";
+    if (!cleanKey) return [];
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`,
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    if (!response.ok) {
+      return DEFAULT_CANDIDATE_MODELS;
+    }
+
+    const data = await response.json();
+    if (!data || !Array.isArray(data.models)) {
+      return DEFAULT_CANDIDATE_MODELS;
+    }
+
+    const compatible = data.models
+      .filter((m: any) => {
+        const name = (m.name || "").replace(/^models\//, "");
+        const methods = m.supportedGenerationMethods || [];
+        const isGenerateContent = methods.includes("generateContent");
+        const isGemini = name.toLowerCase().includes("gemini");
+        const isExcluded =
+          name.includes("embedding") ||
+          name.includes("aqa") ||
+          name.includes("imagen") ||
+          name.includes("tts") ||
+          name.includes("whisper");
+        return isGenerateContent && isGemini && !isExcluded;
+      })
+      .map((m: any) => (m.name || "").replace(/^models\//, ""));
+
+    if (compatible.length > 0) {
+      return Array.from(new Set(compatible));
+    }
+
+    return DEFAULT_CANDIDATE_MODELS;
+  } catch (error) {
+    console.error("Error listing Gemini models:", error);
+    return DEFAULT_CANDIDATE_MODELS;
+  }
+}
 
 export async function callGeminiJSON({
   apiKey,
   prompt,
   images = [],
+  model: preferredModel,
 }: CallGeminiJSONParams): Promise<any> {
   const cleanKey = apiKey ? apiKey.trim() : "";
   if (!cleanKey) {
@@ -107,8 +156,12 @@ export async function callGeminiJSON({
     parts.push(image);
   }
 
-  // Hilangkan duplikasi model list
-  const modelsToTry = Array.from(new Set(CANDIDATE_MODELS));
+  // Bangun daftar candidate models
+  const rawCandidateList = (preferredModel && preferredModel !== "auto")
+    ? [preferredModel, ...DEFAULT_CANDIDATE_MODELS]
+    : DEFAULT_CANDIDATE_MODELS;
+
+  const modelsToTry = Array.from(new Set(rawCandidateList));
   let lastError: unknown = null;
 
   for (const modelName of modelsToTry) {

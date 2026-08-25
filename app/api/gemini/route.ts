@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { callGeminiJSON } from "@/lib/gemini/client";
+import { callGeminiJSON, listCompatibleGeminiModels } from "@/lib/gemini/client";
 import {
   buildAnalyzePrompt,
   buildSetupPrompt,
@@ -14,7 +14,7 @@ import {
 export async function POST(request: NextRequest) {
   try {
     const body: any = await request.json();
-    const { action, apiKey, ...payload } = body || {};
+    const { action, apiKey, model: requestedModel, ...payload } = body || {};
     const cleanKey = typeof apiKey === "string" ? apiKey.trim() : "";
 
     if (!cleanKey) {
@@ -25,13 +25,20 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "test") {
-      const data = await callGeminiJSON({
-        apiKey: cleanKey,
-        prompt: 'Jawab dengan JSON: {"status": "ok"}',
-      });
+      const [testData, models] = await Promise.all([
+        callGeminiJSON({
+          apiKey: cleanKey,
+          prompt: 'Jawab dengan JSON: {"status": "ok"}',
+          model: requestedModel,
+        }),
+        listCompatibleGeminiModels(cleanKey),
+      ]);
 
-      if (data && typeof data === "object") {
-        return NextResponse.json({ success: true, data: { ok: true } });
+      if (testData && typeof testData === "object") {
+        return NextResponse.json({
+          success: true,
+          data: { ok: true, models: models || [] },
+        });
       }
 
       return NextResponse.json(
@@ -51,7 +58,12 @@ export async function POST(request: NextRequest) {
       }
 
       const prompt = buildAnalyzePrompt();
-      const data = await callGeminiJSON({ apiKey: cleanKey, prompt, images });
+      const data = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        images,
+        model: requestedModel,
+      });
 
       const validation = validateProductAnalysis(data);
 
@@ -82,7 +94,11 @@ export async function POST(request: NextRequest) {
       }
 
       const prompt = buildSetupPrompt(analysis, conditions);
-      const data = await callGeminiJSON({ apiKey: cleanKey, prompt });
+      const data = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        model: requestedModel,
+      });
 
       const validation = validateSetupShooting(data);
 
@@ -123,7 +139,11 @@ export async function POST(request: NextRequest) {
         jumlahScript,
       });
 
-      const rawData = await callGeminiJSON({ apiKey: cleanKey, prompt });
+      const rawData = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        model: requestedModel,
+      });
 
       // Pastikan analisisProduk dan setupShooting selalu sinkron dengan data yang sudah di-lock sebelumnya
       const dataToValidate = {

@@ -15,6 +15,10 @@ interface AppContextValue {
   status: ApiStatus;
   statusMessage: string;
   testConnection: (key?: string) => Promise<boolean>;
+  selectedModel: string;
+  setSelectedModel: (model: string) => void;
+  availableModels: string[];
+  setAvailableModels: (models: string[]) => void;
   projectResult: GeneratedResult | null;
   setProjectResult: (result: GeneratedResult | null) => void;
 }
@@ -27,6 +31,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [statusMessage, setStatusMessage] = useState(
     "Masukkan API Gemini untuk mulai menggunakan fitur AI."
   );
+  const [selectedModel, setSelectedModel] = useState("auto");
+  const [availableModels, setAvailableModels] = useState<string[]>([
+    "gemini-1.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-pro",
+    "gemini-1.5-flash-latest",
+  ]);
   const [projectResult, setProjectResult] = useState<GeneratedResult | null>(null);
 
   const setApiKey = useCallback((key: string) => {
@@ -54,15 +65,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const response = await fetch("/api/gemini", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "test", apiKey: keyToTest }),
+          body: JSON.stringify({
+            action: "test",
+            apiKey: keyToTest,
+            model: selectedModel,
+          }),
         });
 
         const result = await response.json();
 
         if (response.ok && result.success) {
           setStatus("connected");
-          setStatusMessage("API Gemini berhasil terhubung dan siap digunakan.");
+          setStatusMessage("API Gemini berhasil terhubung dan model kompatibel terdeteksi.");
           setApiKeyState(keyToTest);
+          if (Array.isArray(result.data?.models) && result.data.models.length > 0) {
+            setAvailableModels(result.data.models);
+          }
           return true;
         }
 
@@ -75,7 +93,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return false;
       }
     },
-    [apiKey]
+    [apiKey, selectedModel]
   );
 
   return (
@@ -86,6 +104,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         status,
         statusMessage,
         testConnection,
+        selectedModel,
+        setSelectedModel,
+        availableModels,
+        setAvailableModels,
         projectResult,
         setProjectResult,
       }}

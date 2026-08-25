@@ -22,7 +22,7 @@ import {
 type Step = "upload" | "analysis_result" | "conditions" | "setup_locked";
 
 export default function CreateProjectPage() {
-  const { apiKey, status, setProjectResult } = useApp();
+  const { apiKey, status, selectedModel, setProjectResult } = useApp();
   const router = useRouter();
 
   const [photos, setPhotos] = useState<(File | null)[]>(Array(5).fill(null));
@@ -52,7 +52,7 @@ export default function CreateProjectPage() {
       const response = await fetch("/api/gemini", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, apiKey, ...payload }),
+        body: JSON.stringify({ action, apiKey, model: selectedModel, ...payload }),
       });
       const data = await response.json();
       if (!response.ok || !data.success) {
@@ -133,6 +133,7 @@ export default function CreateProjectPage() {
         body: JSON.stringify({
           action: "generate",
           apiKey,
+          model: selectedModel,
           analysis,
           setup,
           dubbing,
