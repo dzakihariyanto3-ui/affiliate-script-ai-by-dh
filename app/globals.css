@@ -71,6 +71,21 @@ html {
   overscroll-behavior-y: auto;
   touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
+  /* Hide scrollbars while preserving scroll */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+@media (min-width: 769px) {
+  .mobile-nav-toggle {
+    display: none !important;
+  }
 }
 
 body,

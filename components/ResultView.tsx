@@ -95,7 +95,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
               className="font-section-heading text-primary"
               style={{ fontSize: "22px", fontWeight: 700 }}
             >
-              Hasil Generasi Script
+              Menghasilkan Script
             </h1>
             <p className="font-caption text-on-surface-variant" style={{ marginTop: "2px" }}>
               Proyek: {result.analisisProduk.produk} ({result.scripts.length} Script Siap Pakai)
@@ -131,12 +131,9 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
 
       {/* Internal Scroll Workspace */}
       <div
-        className="workspace-scroll"
         style={{
           flex: 1,
           overflowY: "auto",
-          overflowX: "hidden",
-          overscrollBehaviorX: "none",
           touchAction: "pan-y",
           backgroundColor: "var(--background)",
           width: "100%",

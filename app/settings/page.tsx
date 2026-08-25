@@ -15,16 +15,7 @@ const instructions = [
 ];
 
 export default function SettingsPage() {
-  const {
-    apiKey,
-    setApiKey,
-    status,
-    statusMessage,
-    testConnection,
-    selectedModel,
-    setSelectedModel,
-    availableModels,
-  } = useApp();
+  const { apiKey, setApiKey, status, statusMessage, testConnection } = useApp();
   const [inputValue, setInputValue] = useState(apiKey);
   const [testing, setTesting] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
@@ -104,42 +95,6 @@ export default function SettingsPage() {
               placeholder="Tempel API Key Gemini di sini"
               autoComplete="off"
             />
-          </div>
-
-          {/* Model Selection Row */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "4px" }}>
-              <label
-                htmlFor="selectedModel"
-                className="font-label text-primary"
-                style={{ fontWeight: 600 }}
-              >
-                Model Gemini
-              </label>
-              {status === "connected" && (
-                <span className="font-caption" style={{ color: "var(--success)", fontWeight: 600 }}>
-                  ✓ {availableModels.length} model kompatibel terdeteksi
-                </span>
-              )}
-            </div>
-
-            <select
-              id="selectedModel"
-              className="input-premium"
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              style={{ cursor: "pointer" }}
-            >
-              <option value="auto">Otomatis (Sistem memilih model terbaik yang kompatibel)</option>
-              {availableModels.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <p className="font-caption text-on-surface-variant" style={{ fontSize: "12px" }}>
-              Sistem secara otomatis mendeteksi model Google Gemini yang mendukung pemrosesan multimodal (gambar &amp; teks) dan struktur JSON.
-            </p>
           </div>
 
           {/* Status Row */}
@@ -237,7 +192,7 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        {/* Step by Step Guide (Shown if toggled or if needed) */}
+        {/* Step by Step Guide (Shown if toggled) */}
         {showInstructions && (
           <div
             style={{

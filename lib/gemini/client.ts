@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
-  GEMINI_MODEL,
   GEMINI_RESPONSE_MIME_TYPE,
   GEMINI_TEMPERATURE,
   GEMINI_TOP_P,
@@ -21,6 +20,16 @@ interface CallGeminiJSONParams {
   model?: string;
 }
 
+export const FALLBACK_GEMINI_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-pro",
+  "gemini-1.5-flash-8b",
+  "gemini-2.0-flash-lite",
+];
+
 function normalizeErrorMessage(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
   const normalized = message.toLowerCase();
@@ -30,7 +39,7 @@ function normalizeErrorMessage(error: unknown): string {
     normalized.includes("invalid api key") ||
     normalized.includes("api_key_invalid") ||
     normalized.includes("api key expired") ||
-    normalized.includes("400") && normalized.includes("key") ||
+    (normalized.includes("400") && normalized.includes("key")) ||
     normalized.includes("403") ||
     normalized.includes("forbidden")
   ) {
@@ -45,9 +54,10 @@ function normalizeErrorMessage(error: unknown): string {
     (normalized.includes("not found") ||
       normalized.includes("not available") ||
       normalized.includes("does not exist") ||
+      normalized.includes("is not supported") ||
       normalized.includes("404"))
   ) {
-    return "Model Gemini tidak tersedia untuk akun ini.";
+    return "Tidak ditemukan model Gemini yang kompatibel untuk API ini.";
   }
 
   if (
@@ -83,15 +93,6 @@ function normalizeErrorMessage(error: unknown): string {
   return `Gagal menghubungi Gemini: ${message.replace(/AIzaSy[A-Za-z0-9_-]+/g, "[API_KEY_HIDDEN]")}`;
 }
 
-const DEFAULT_CANDIDATE_MODELS = [
-  GEMINI_MODEL,
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-latest",
-  "gemini-2.0-flash",
-  "gemini-1.5-pro",
-  "gemini-2.5-flash",
-];
-
 export async function listCompatibleGeminiModels(apiKey: string): Promise<string[]> {
   try {
     const cleanKey = apiKey ? apiKey.trim() : "";
@@ -103,12 +104,12 @@ export async function listCompatibleGeminiModels(apiKey: string): Promise<string
     );
 
     if (!response.ok) {
-      return DEFAULT_CANDIDATE_MODELS;
+      return FALLBACK_GEMINI_MODELS;
     }
 
     const data = await response.json();
     if (!data || !Array.isArray(data.models)) {
-      return DEFAULT_CANDIDATE_MODELS;
+      return FALLBACK_GEMINI_MODELS;
     }
 
     const compatible = data.models
@@ -122,19 +123,42 @@ export async function listCompatibleGeminiModels(apiKey: string): Promise<string
           name.includes("aqa") ||
           name.includes("imagen") ||
           name.includes("tts") ||
-          name.includes("whisper");
+          name.includes("whisper") ||
+          name.includes("bison") ||
+          name.includes("1.0"); // 1.0 does not support structured JSON or multimodal as 1.5+ does
         return isGenerateContent && isGemini && !isExcluded;
       })
       .map((m: any) => (m.name || "").replace(/^models\//, ""));
 
     if (compatible.length > 0) {
-      return Array.from(new Set(compatible));
+      // Urutkan model berdasarkan prioritas: flash terbaru -> flash -> pro -> lainnya
+      const priorityOrder = [
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-latest",
+        "gemini-1.5-pro",
+        "gemini-1.5-pro-latest",
+        "gemini-1.5-flash-8b",
+        "gemini-2.0-flash-lite",
+      ];
+
+      const sorted = [...compatible].sort((a, b) => {
+        const indexA = priorityOrder.indexOf(a);
+        const indexB = priorityOrder.indexOf(b);
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.localeCompare(b);
+      });
+
+      return Array.from(new Set(sorted));
     }
 
-    return DEFAULT_CANDIDATE_MODELS;
+    return FALLBACK_GEMINI_MODELS;
   } catch (error) {
     console.error("Error listing Gemini models:", error);
-    return DEFAULT_CANDIDATE_MODELS;
+    return FALLBACK_GEMINI_MODELS;
   }
 }
 
@@ -156,13 +180,27 @@ export async function callGeminiJSON({
     parts.push(image);
   }
 
-  // Bangun daftar candidate models
-  const rawCandidateList = (preferredModel && preferredModel !== "auto")
-    ? [preferredModel, ...DEFAULT_CANDIDATE_MODELS]
-    : DEFAULT_CANDIDATE_MODELS;
+  // Dapatkan daftar model yang kompatibel secara otomatis
+  let compatibleModels: string[] = [];
+  try {
+    compatibleModels = await listCompatibleGeminiModels(cleanKey);
+  } catch {
+    compatibleModels = FALLBACK_GEMINI_MODELS;
+  }
+
+  if (!compatibleModels || compatibleModels.length === 0) {
+    compatibleModels = FALLBACK_GEMINI_MODELS;
+  }
+
+  // Bangun daftar candidate models untuk dicoba secara berurutan
+  const rawCandidateList =
+    preferredModel && preferredModel !== "auto"
+      ? [preferredModel, ...compatibleModels, ...FALLBACK_GEMINI_MODELS]
+      : [...compatibleModels, ...FALLBACK_GEMINI_MODELS];
 
   const modelsToTry = Array.from(new Set(rawCandidateList));
   let lastError: unknown = null;
+  let hasModelError = false;
 
   for (const modelName of modelsToTry) {
     try {
@@ -191,16 +229,49 @@ export async function callGeminiJSON({
     } catch (error) {
       lastError = error;
       const errMsg = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
-      
-      // Jika errornya bukan karena model tidak ditemukan, jangan lanjut ke model lain (misal invalid key, rate limit)
-      const isModelNotFound = errMsg.includes("not found") || errMsg.includes("404") || errMsg.includes("not available");
-      if (!isModelNotFound) {
+
+      // Jika errornya adalah API Key tidak valid / permission, jangan buang waktu mencoba model lain
+      const isAuthError =
+        errMsg.includes("api key not valid") ||
+        errMsg.includes("invalid api key") ||
+        errMsg.includes("api_key_invalid") ||
+        errMsg.includes("api key expired") ||
+        (errMsg.includes("400") && errMsg.includes("key")) ||
+        errMsg.includes("403") ||
+        errMsg.includes("permission_denied") ||
+        errMsg.includes("forbidden");
+
+      if (isAuthError) {
         break;
+      }
+
+      // Jika error karena model tidak ditemukan / 404 / tidak tersedia, lanjutkan ke model kompatibel berikutnya
+      const isModelNotFound =
+        errMsg.includes("not found") ||
+        errMsg.includes("404") ||
+        errMsg.includes("not available") ||
+        errMsg.includes("does not exist") ||
+        errMsg.includes("unsupported") ||
+        errMsg.includes("is not supported");
+
+      if (isModelNotFound) {
+        hasModelError = true;
+        continue;
+      }
+
+      // Jika quota atau rate limit khusus model tertentu, coba model lain juga
+      if (errMsg.includes("429") || errMsg.includes("quota") || errMsg.includes("resource exhausted")) {
+        continue;
       }
     }
   }
 
   const safeError = lastError instanceof Error ? lastError.message : String(lastError);
   console.error("Gemini API Error:", safeError.replace(/AIzaSy[A-Za-z0-9_-]+/g, "[REDACTED]"));
+
+  if (hasModelError && !lastError) {
+    throw new Error("Tidak ditemukan model Gemini yang kompatibel untuk API ini.");
+  }
+
   throw new Error(normalizeErrorMessage(lastError));
 }

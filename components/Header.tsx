@@ -118,7 +118,7 @@ export default function Header() {
             border: "1px solid var(--outline-variant)",
             borderRadius: "var(--radius-md)",
             padding: "8px",
-            display: "none",
+            display: "flex",
             alignItems: "center",
             justifyContent: "center",
             color: "var(--on-surface)",

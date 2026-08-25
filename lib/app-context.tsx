@@ -68,7 +68,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
           body: JSON.stringify({
             action: "test",
             apiKey: keyToTest,
-            model: selectedModel,
           }),
         });
 
@@ -76,16 +75,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
         if (response.ok && result.success) {
           setStatus("connected");
-          setStatusMessage("API Gemini berhasil terhubung dan model kompatibel terdeteksi.");
+          setStatusMessage("");
           setApiKeyState(keyToTest);
-          if (Array.isArray(result.data?.models) && result.data.models.length > 0) {
-            setAvailableModels(result.data.models);
-          }
           return true;
         }
 
         setStatus("error");
-        setStatusMessage(result.message || "API key tidak valid.");
+        setStatusMessage(
+          result.message || "Tidak ditemukan model Gemini yang kompatibel untuk API ini."
+        );
         return false;
       } catch {
         setStatus("error");
@@ -93,7 +91,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return false;
       }
     },
-    [apiKey, selectedModel]
+    [apiKey]
   );
 
   return (

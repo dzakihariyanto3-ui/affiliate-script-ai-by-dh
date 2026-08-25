@@ -25,19 +25,27 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "test") {
-      const [testData, models] = await Promise.all([
-        callGeminiJSON({
-          apiKey: cleanKey,
-          prompt: 'Jawab dengan JSON: {"status": "ok"}',
-          model: requestedModel,
-        }),
-        listCompatibleGeminiModels(cleanKey),
-      ]);
+      const models = await listCompatibleGeminiModels(cleanKey);
+
+      if (!models || models.length === 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Tidak ditemukan model Gemini yang kompatibel untuk API ini.",
+          },
+          { status: 400 }
+        );
+      }
+
+      const testData = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt: 'Jawab hanya dengan JSON: {"status": "ok"}',
+      });
 
       if (testData && typeof testData === "object") {
         return NextResponse.json({
           success: true,
-          data: { ok: true, models: models || [] },
+          data: { ok: true },
         });
       }
 
