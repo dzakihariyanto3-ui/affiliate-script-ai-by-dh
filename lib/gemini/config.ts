@@ -1,4 +1,4 @@
-export const GEMINI_MODEL = "gemini-3.6-flash";
+export const GEMINI_MODEL = "gemini-1.5-flash";
 
 export const GEMINI_RESPONSE_MIME_TYPE = "application/json";
 

@@ -8,12 +8,15 @@ export default function GeminiStatusButton() {
 
   const isConnected = status === "connected";
   const isChecking = status === "checking";
+  const isError = status === "error";
 
   const dotColor = isConnected ? "#22C55E" : isChecking ? "#0453cd" : "#ba1a1a";
   const statusLabel = isConnected
     ? "Gemini AI · Terhubung"
     : isChecking
     ? "Gemini AI · Memeriksa"
+    : isError
+    ? "Gemini AI · Tidak Terhubung"
     : "Gemini AI · Belum Terhubung";
 
   return (

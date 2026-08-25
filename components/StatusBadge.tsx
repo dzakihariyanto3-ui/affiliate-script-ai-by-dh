@@ -22,7 +22,7 @@ const statusConfig: Record<
     textColor: "#1a1c1c",
   },
   error: {
-    label: "Belum Terhubung",
+    label: "Tidak Terhubung",
     dotColor: "#ba1a1a",
     textColor: "#ba1a1a",
   },

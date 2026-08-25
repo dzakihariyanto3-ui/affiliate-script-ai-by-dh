@@ -5,6 +5,33 @@ import Link from "next/link";
 import { GeneratedResult } from "@/lib/types";
 import { formatAllResult, formatScript } from "@/lib/format";
 
+async function copyToClipboard(text: string): Promise<boolean> {
+  if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Fallback
+    }
+  }
+
+  try {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const successful = document.execCommand("copy");
+    document.body.removeChild(textArea);
+    return successful;
+  } catch {
+    return false;
+  }
+}
+
 export default function ResultView({ result }: { result: GeneratedResult }) {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
@@ -13,22 +40,18 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
   const handleCopySingle = async (index: number) => {
     const script = result.scripts[index];
     if (!script) return;
-    try {
-      await navigator.clipboard.writeText(formatScript(script, index));
+    const ok = await copyToClipboard(formatScript(script, index));
+    if (ok) {
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
-    } catch {
-      // Fallback
     }
   };
 
   const handleCopyAll = async () => {
-    try {
-      await navigator.clipboard.writeText(formatAllResult(result));
+    const ok = await copyToClipboard(formatAllResult(result));
+    if (ok) {
       setCopiedAll(true);
       setTimeout(() => setCopiedAll(false), 2000);
-    } catch {
-      // Fallback
     }
   };
 
@@ -286,11 +309,12 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                       className="btn-secondary"
                       onClick={() => handleCopySingle(index)}
                       style={{ padding: "6px 14px", fontSize: "13px" }}
+                      title="Salin Script Ini"
                     >
                       <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
                         {isCopied ? "done" : "content_copy"}
                       </span>
-                      {isCopied ? "Tersalin" : "Salin"}
+                      {isCopied ? "Tersalin" : "Salin Script Ini"}
                     </button>
                   </div>
 
