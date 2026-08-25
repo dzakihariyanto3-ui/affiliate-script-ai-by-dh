@@ -137,7 +137,7 @@ export default function BerandaPage() {
           marginTop: "64px",
           marginBottom: "32px",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
           gap: "24px",
         }}
       >

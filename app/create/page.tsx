@@ -366,11 +366,14 @@ export default function CreateProjectPage() {
 
           {/* Bento Grid Layout */}
           <div
+            className="bento-grid-container"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(12, 1fr)",
               gap: "24px",
               marginBottom: "36px",
+              width: "100%",
+              boxSizing: "border-box",
             }}
           >
             {/* Informasi Utama */}
@@ -1125,11 +1128,15 @@ export default function CreateProjectPage() {
           }
         }
         @media (max-width: 768px) {
+          .bento-grid-container {
+            grid-template-columns: 1fr !important;
+            gap: 16px !important;
+          }
           .bento-col-6 {
-            grid-column: span 12 / span 12 !important;
+            grid-column: 1 / -1 !important;
           }
           .bento-col-2 {
-            grid-column: span 1 / span 1 !important;
+            grid-column: 1 / -1 !important;
           }
         }
       `}</style>

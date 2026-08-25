@@ -112,12 +112,16 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
         style={{
           flex: 1,
           overflowY: "auto",
+          overflowX: "hidden",
+          overscrollBehaviorX: "none",
+          touchAction: "pan-y",
           backgroundColor: "var(--background)",
           width: "100%",
           display: "flex",
           justifyContent: "center",
           paddingTop: "24px",
           paddingBottom: "24px",
+          boxSizing: "border-box",
         }}
       >
         <div
@@ -127,6 +131,8 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
             flexDirection: "column",
             gap: "24px",
             paddingBottom: "40px",
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
           {/* Ringkasan Analisis & Setup (Accordion) */}
@@ -136,6 +142,8 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
               border: "1px solid var(--outline-variant)",
               borderRadius: "var(--radius-md)",
               overflow: "hidden",
+              width: "100%",
+              boxSizing: "border-box",
             }}
           >
             <button
@@ -180,8 +188,10 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                   borderTop: "1px solid var(--outline-variant)",
                   paddingTop: "16px",
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(min(260px, 100%), 1fr))",
                   gap: "16px",
+                  width: "100%",
+                  boxSizing: "border-box",
                 }}
                 className="font-body text-on-surface-variant"
               >

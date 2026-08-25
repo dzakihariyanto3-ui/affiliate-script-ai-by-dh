@@ -62,7 +62,19 @@
   padding: 0;
 }
 
-html, body {
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+body,
+.app-body {
   background-color: var(--background);
   color: var(--on-surface);
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -70,21 +82,26 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-}
-
-body,
-.app-body {
-  min-height: 100vh;
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
+  touch-action: pan-y;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  max-width: 100%;
+  height: auto;
 }
 
 a {
@@ -100,12 +117,16 @@ button, input, textarea, select {
 /* App Main Container */
 .app-main {
   width: 100%;
+  max-width: 100%;
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 64px; /* Space for fixed 64px header */
   box-sizing: border-box;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
 }
 
 /* Container System for 100% Horizontal Centering & Consistency */
@@ -118,6 +139,7 @@ button, input, textarea, select {
   padding-left: var(--margin);
   padding-right: var(--margin);
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .px-margin {

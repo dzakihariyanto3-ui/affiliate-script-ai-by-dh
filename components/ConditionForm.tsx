@@ -23,12 +23,14 @@ export default function ConditionForm({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))",
         gap: "24px",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       {/* Left Column */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <label className="font-label text-primary" htmlFor="lokasi">
             Lokasi shooting
@@ -75,14 +77,15 @@ export default function ConditionForm({
       </div>
 
       {/* Right Column */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px", width: "100%" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <label className="font-label text-primary">Penampilan</label>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "12px",
+              gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+              gap: "10px",
+              width: "100%",
             }}
           >
             {appearanceOptions.map((opt) => {

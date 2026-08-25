@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppProvider } from "@/lib/app-context";
 import Header from "@/components/Header";
@@ -6,6 +6,13 @@ import Header from "@/components/Header";
 export const metadata: Metadata = {
   title: "Affiliate Script AI - Buat Script Affiliate TikTok Lebih Cepat",
   description: "Upload produk, tentukan setup shooting, lalu dapatkan script, footage, caption, dan hashtag yang siap digunakan.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

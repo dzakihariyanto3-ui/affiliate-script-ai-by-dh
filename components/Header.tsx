@@ -20,13 +20,17 @@ export default function Header() {
         position: "fixed",
         top: 0,
         left: 0,
+        right: 0,
         width: "100%",
+        maxWidth: "100vw",
         height: "64px",
         backgroundColor: "var(--surface-container-lowest)",
         borderBottom: "1px solid var(--outline-variant)",
         zIndex: 50,
         display: "flex",
         justifyContent: "center",
+        boxSizing: "border-box",
+        overflowX: "hidden",
       }}
     >
       <div
