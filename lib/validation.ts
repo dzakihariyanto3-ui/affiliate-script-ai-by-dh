@@ -30,6 +30,19 @@ function toStringArraySafe(value: unknown, defaultArray: string[] = []): string[
   return defaultArray;
 }
 
+/**
+ * Estimasi durasi bicara bahasa Indonesia (rata-rata 130–150 kata per menit / ~2.3 kata per detik).
+ * Mengembalikan estimasi durasi dalam satuan detik.
+ */
+export function estimateSpeechDurationSeconds(text: string): number {
+  if (!text || typeof text !== "string") return 0;
+  const clean = text.replace(/[^\w\s\u00C0-\u024F]/gi, " ").trim();
+  const words = clean.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return 0;
+  // Rasio 140 kata per 60 detik
+  return Math.max(1, Math.round((words.length / 140) * 60));
+}
+
 export function validateProductAnalysis(data: any): {
   valid: boolean;
   errors: string[];
@@ -165,8 +178,15 @@ function validateScript(script: any, index: number): { errors: string[]; script:
   const hook = toStringSafe(script?.hook || script?.pembuka, `Hook ${no}`);
   const narasi = toStringSafe(script?.narasi || script?.naskah, `Narasi script ${no}`);
   const cta = toStringSafe(script?.cta || script?.call_to_action, "Klik keranjang kuning sekarang.");
-  const caption = toStringSafe(script?.caption || script?.deskripsi, "Dapatkan produk terbaik ini sekarang juga.");
+  
+  // Normalisasi Caption: Pastikan 1 kalimat bersih tanpa multi-line berantakan
+  let rawCaption = toStringSafe(script?.caption || script?.deskripsi, "Dapatkan produk terbaik ini sekarang juga.");
+  rawCaption = rawCaption.replace(/\r?\n+/g, " ").trim();
+  // Jika ada beberapa kalimat yang terpisah tanda titik, ambil kalimat pertama atau rapikan
+  const captionSentences = rawCaption.split(/(?<=[.!?])\s+/).filter(Boolean);
+  const caption = captionSentences.length > 0 ? captionSentences[0] : rawCaption;
 
+  // Normalisasi Footage: Minimal 4 instruksi visual
   let footage = toStringArraySafe(script?.footage || script?.arahan_footage, [
     "Tunjukkan produk dari dekat.",
     "Peragakan cara penggunaan produk.",
@@ -180,10 +200,13 @@ function validateScript(script: any, index: number): { errors: string[]; script:
     }
   }
 
+  // Normalisasi Hashtags: Tepat 5 tagar diawali tanda #
   let hashtags = toStringArraySafe(script?.hashtags || script?.tagar, []);
-  // Bersihkan format hashtag
   hashtags = hashtags
-    .map((tag) => (tag.startsWith("#") ? tag : `#${tag.replace(/\s+/g, "")}`))
+    .map((tag) => {
+      const clean = tag.replace(/^[#\s]+/, "").replace(/\s+/g, "");
+      return clean.length > 0 ? `#${clean}` : "";
+    })
     .filter((tag) => tag.length > 1);
 
   const defaultTags = ["#affiliatetiktok", "#racuntiktok", "#tiktokshop", "#produkviral", "#rekomendasi"];
@@ -194,6 +217,13 @@ function validateScript(script: any, index: number): { errors: string[]; script:
     }
   } else if (hashtags.length > 5) {
     hashtags = hashtags.slice(0, 5);
+  }
+
+  // Pemeriksaan durasi narasi: target 30-45s, max 60s
+  const durationSeconds = estimateSpeechDurationSeconds(narasi);
+  if (durationSeconds > 60) {
+    // Beri toleransi catatan tanpa membatalkan jika isi tetap bernilai
+    console.warn(`[Validation] Script ${no} estimasi durasi ${durationSeconds} detik (> 60 detik).`);
   }
 
   if (!script?.angle && !script?.sudut_penjualan) errors.push(`Script ${no}: angle tidak ditemukan.`);
@@ -288,4 +318,4 @@ export function validateGeneratedResult(
   }
 
   return { valid: false, errors };
-}
+}
