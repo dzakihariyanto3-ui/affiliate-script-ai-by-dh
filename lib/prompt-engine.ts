@@ -14,8 +14,8 @@ TUGAS UTAMA:
 Analisis dan identifikasi seluruh informasi produk secara faktual, tajam, dan akurat berdasarkan tampilan visual dan teks pada 5 foto yang diberikan.
 
 PRINSIP ANALISIS & KONVERSI BENEFIT:
-1. JANGAN MENGARANG FAKTA: Dilarang mengarang spesifikasi, angka performa, sertifikasi, garansi, klaim medis, atau klaim teknis yang tidak tertera pada foto. Dilarang membuat klaim absolut yang tidak didukung data produk.
-2. KONVERSI SPEK MENJADI MANFAAT: Jangan hanya mencatat spesifikasi mentah. Terjemahkan setiap fitur/spesifikasi visual menjadi fungsi nyata, masalah yang diselesaikan, dan dampak positif bagi pengguna sehari-hari. Prioritaskan 1 manfaat utama yang paling relevan.
+1. JANGAN MENGARANG FAKTA: Dilarang mengarang spesifikasi, angka, durasi, harga, penghematan, performa, sertifikasi, garansi, testimoni, klaim medis, klaim teknis, atau perbandingan yang tidak tertera pada foto/data produk. Dilarang membuat klaim absolut yang tidak didukung data produk. Lebih baik klaim sederhana yang benar daripada klaim menarik tetapi tidak dapat dibuktikan.
+2. KETEPATAN MASALAH & SEBAB-AKIBAT: Jangan mengubah masalah produk menjadi masalah lain. Pastikan masalah, fitur, dan manfaat tetap murni sesuai produk. Setiap benefit harus memiliki hubungan sebab-akibat yang jelas dan logis dengan fitur visual atau cara penggunaan produk.
 3. IDENTIFIKASI TARGET & MASALAH: Tentukan siapa pembeli yang paling membutuhkan produk ini dan apa rasa repot / rasa kesal / kebutuhan spesifik yang dapat dibantu oleh produk ini.
 4. ATURAN FALLBACK DATA:
    - Jika informasi tertentu tidak terlihat jelas: isi dengan "Tidak terlihat jelas di foto".
@@ -98,59 +98,63 @@ METODE DUBBING: ${dubbing}
 JUMLAH SCRIPT YANG DIHASILKAN: ${jumlahScript}
 
 =======================================================
-ALUR BERPIKIR COPYWRITING (COGNITIVE CHAIN):
-Produk → Target Pengguna → Situasi Nyata / Pain Point → Solusi Produk → 1 Benefit Utama Nyata → Dampak Positif → Alasan Membeli → Objection Handling (Keraguan Pembeli) → Buying Trigger → Angle Unik → Hook Menarik → Narasi Percakapan → Arahan Footage Visual → Call to Action (CTA).
+LOGIKA DASAR SEBELUM MENULIS SETIAP SCRIPT:
+Sebelum menulis, tentukan dengan jelas fondasi berikut untuk setiap naskah:
+1. Moment of Need (Kapan/di momen apa produk ini sangat dibutuhkan oleh pengguna)
+2. 1 Masalah Utama (Rasa repot / rasa kesal spesifik yang ingin diselesaikan, tanpa melenceng dari fungsi asli produk)
+3. 1 Core Selling Idea (Ide pokok pesan yang membuat produk ini menarik)
+4. 1 Benefit Utama (Manfaat konkret terbesar yang terhubung langsung secara sebab-akibat dengan fitur produk)
+5. Alasan Membeli (Mengapa produk ini layak dipertimbangkan dibanding cara lama)
 =======================================================
 
 ATURAN KUALITAS NASKAH (WAJIB DIPATUHI SECARA KETAT):
 
-1. BAHASA INDONESIA PERCAKAPAN SANGAT NATURAL (UJI VOICE NOTE):
-- Gunakan bahasa Indonesia percakapan yang natural, sederhana, dan nyaman diucapkan.
-- Terapkan "Uji Voice Note": bayangkan kreator sedang mengirim voice note atau mengobrol santai mereview produk ke temannya. Jika narasi terdengar seperti brosur, iklan, artikel, sales pitch kaku, atau tulisan AI, TULIS ULANG.
-- Gunakan susunan kalimat yang mengalir dan ritme bervariasi (kombinasi kalimat pendek dan sedang).
-- Hindari bahasa terlalu formal/baku yang kaku, dan hindari slang berlebihan.
-- JANGAN MEMAKSAKAN kata penghubung klise (seperti "nah", "jadi", "makanya", "yuk simak") di awal setiap kalimat. Gunakan hanya jika benar-benar mengalir natural.
+1. FAKTA & KEJUJURAN KLAIM:
+- Dilarang keras mengarang angka, durasi, harga, penghematan, hasil, performa, testimoni, atau perbandingan yang tidak diberikan user/foto.
+- PRINSIP: Lebih baik klaim sederhana yang benar daripada klaim menarik tetapi tidak dapat dibuktikan.
+- Dilarang membuat klaim absolut yang tidak didukung data produk (tanpa kata "paling bagus sedunia", "pasti sembuh", dsb).
+- Dilarang mengarang pengalaman penggunaan pribadi fiktif (seperti "saya sudah pakai 6 bulan", testimoni buatan, angka hasil fiktif, klaim medis, atau garansi palsu).
+- Gunakan sudut pandang objektif yang aman & persuasif: "Yang paling ngebantu dari produk ini...", "Biar nggak ribet pas...", "Desainnya ini fokus di kemudahan...".
+
+2. KETEPATAN MASALAH:
+- Jangan mengubah masalah produk menjadi masalah lain hanya demi membuat hook lebih menarik.
+- Pastikan masalah yang diangkat, fitur yang disorot, dan manfaat yang dijelaskan tetap murni sesuai produk aslinya.
+
+3. SEBAB-AKIBAT LOGIS (FEATURE-TO-BENEFIT):
+- Setiap benefit harus punya hubungan sebab-akibat yang jelas dan masuk akal dengan fitur atau cara penggunaan produk.
+- Jangan memaksakan benefit atau klaim yang tidak berhubungan dengan fungsi nyata produk.
+- Jangan hanya mengatakan produk bagus, praktis, atau berkualitas. Tunjukkan situasi nyata dan alasan logis yang membuat produk tersebut berguna.
+
+4. NATURAL + PERSUASIF (UJI VOICE NOTE):
+- Gunakan bahasa percakapan Indonesia yang natural seperti sedang mengobrol atau berbicara kepada teman.
+- JIKA SEBUAH KALIMAT TERDENGAR SEPERTI IKLAN, BROSUR, MARKETPLACE, ARTIKEL, ATAU COPYWRITING KAKU: TULIS ULANG.
+- Jangan menjelaskan bahwa "produk ini bagus" secara eksplisit. Ceritakan situasi dan fungsinya secara jujur, sehingga penonton MENYIMPULKAN SENDIRI bahwa produk ini berguna.
+- Hindari menumpuk kata jualan. Gunakan susunan kalimat yang mengalir dan ritme yang bervariasi.
+- Hindari bahasa terlalu baku/formal, dan hindari slang berlebihan.
+- JANGAN MEMAKSAKAN kata penghubung klise (seperti "nah", "jadi", "makanya", "yuk simak") di awal setiap kalimat.
 - Seluruh teks naskah, hook, arahan footage, CTA, dan caption TIDAK BOLEH mengandung emoji apa pun.
 
-2. FOKUS 1 MANFAAT UTAMA & BUYER VISUALIZATION (JANGAN MENUMPUK KEUNGGULAN):
-- Setiap script HARUS FOKUS PADA 1 (SATU) MANFAAT UTAMA yang paling kuat dan relevan. Prioritaskan 1 manfaat utama daripada menumpuk banyak keunggulan atau spesifikasi.
-- Hindari terlalu banyak kata jualan dalam satu script.
-- Buat penonton bisa membayangkan dirinya dalam situasi nyata sebelum vs sesudah merasakan 1 manfaat tersebut.
-- Hindari kata sifat abstrak kosong seperti "sangat praktis", "berkualitas tinggi", "bagus banget", atau "sangat nyaman" tanpa alasan dan situasi konkret.
-
-3. AUTHENTIC REVIEW, TANPA KLAIM ABSOLUT & DILARANG MENGARANG PENGALAMAN:
-- Nada script terasa seperti ulasan jujur dan meyakinkan.
-- DILARANG MEMBUAT KLAIM ABSOLUT yang tidak didukung data produk (misal: dilarang mengklaim "paling bagus di dunia", "pasti sembuh", dsb).
-- DILARANG MENGARANG PENGALAMAN PENGGUNAAN pribadi (misal: dilarang mengarang "saya sudah pakai 6 bulan", testimoni buatan, angka hasil fiktif, klaim medis, atau garansi palsu yang tidak ada di data produk).
-- Gunakan sudut pandang objektif yang aman & persuasif: "Yang paling ngebantu dari produk ini...", "Biar nggak ribet pas...", "Desainnya ini fokus di kemudahan...".
-- Gunakan hanya informasi faktual dari data produk yang tersedia.
-
-4. PSYCHOLOGY, OBJECTION HANDLING & BUYING TRIGGER:
-- Angkat sisi emosional sehari-hari: rasa repot, rasa kesal, ingin lebih hemat waktu, atau ingin aktivitas lebih mudah.
-- Sentuh potensi keraguan pembeli (*objection*) secara natural dan berikan jawaban solutifnya.
-- Hindari manipulasi berlebihan, kepalsuan, atau *urgency* palsu yang memaksa.
-
-5. VARIASI HOOK ANTI-KLISE & HINDARI KATA TEMPLATE AFFILIATE:
-- Hook 3 detik pertama harus memikat tanpa *clickbait* palsu.
-- HINDARI KATA TEMPLATE AFFILIATE seperti "rahasia", "wajib", "mumpung", "dijamin", "pasti", "racun tiktok" jika tidak diperlukan atau tidak didukung fakta.
-- HINDARI ketergantungan pada template pembuka berulang seperti:
-  * "Kalau kamu..."
-  * "Buat kamu yang..."
-  * "Wajib punya ini..."
-  * "Jangan beli ini sebelum nonton..."
-- Variasikan jenis hook di setiap script: Problem relatable, Curiosity, Situasi nyata, Insight menarik, Hasil transformasi, atau Sudut pandang contrarian.
+5. VARIASI HOOK ANTI-KLISE & HINDARI TEMPLATE AFFILIATE:
+- Hook 3 detik pertama harus memikat dan menghentikan scrolling tanpa clickbait palsu.
+- HINDARI kata template affiliate seperti "rahasia", "wajib", "mumpung", "dijamin", "pasti", "racun tiktok" jika tidak diperlukan atau tidak didukung fakta.
+- HINDARI formula klise pembuka: "Kalau kamu...", "Buat kamu yang...", "Wajib punya ini...", "Jangan beli ini sebelum nonton...".
+- Variasikan jenis hook di setiap script: Problem relatable, Curiosity visual, Situasi nyata, Insight menarik, Hasil transformasi, atau Sudut pandang contrarian.
 
 6. MULTI-SCRIPT VARIATION (${jumlahScript} Script Berbeda):
 ${
   jumlahScript > 1
-    ? `- Setiap script dari ke-${jumlahScript} naskah WAJIB memiliki angle penjualan dan fokus manfaat yang BERBEDA secara signifikan.
-- Setiap script harus berbeda minimal pada dua aspek utama: Hook pembuka, Masalah/Situasi yang diangkat, Target persona yang disasar, Demonstrasi fokus, atau Buying trigger utama.`
+    ? `- Jika membuat lebih dari 1 script, setiap script dari ke-${jumlahScript} naskah WAJIB berbeda minimal pada 2 (dua) aspek utama berikut:
+  * Situasi (momen/kondisi pemakaian nyata yang diangkat)
+  * Masalah (titik repot/pain point spesifik yang disorot)
+  * Benefit (fokus 1 manfaat utama yang ditonjolkan)
+  * Hook (pembuka 3 detik pertama)
+  * Demonstrasi (fokus aksi visual produk yang diperagakan)`
     : `- Buat script dengan angle penjualan dan 1 fokus manfaat yang paling tajam dan relevan.`
 }
 
-7. ATURAN SETUP SHOOTING TERKUNCI & SOLO CREATOR:
+7. ATURAN SETUP SHOOTING TERKUNCI & FOOTAGE SEBAGAI BUKTI VISUAL:
 - Seluruh script dalam proyek ini menggunakan Setup Shooting yang sama (lokasi, equipment, properti, dan penampilan creator tetap terkunci).
-- Yang boleh bervariasi: angle kamera, framing (close-up detail, medium shot, wide, POV), posisi tangan/tubuh creator, dan urutan aksi visual.
+- Footage harus menjadi bukti visual langsung dari narasi kata demi kata (jika narasi menyebut masalah → peragakan masalah; jika menyebut fitur/fungsi → tunjukkan aksi produknya).
 - 100% footage harus realistis direkam sendirian oleh 1 orang tanpa bantuan kru.
 
 8. ATURAN METODE DUBBING (${dubbing}):
@@ -163,21 +167,31 @@ ${
 9. DURASI & PANJANG KATA (TARGET 30–45 DETIK, MAX 60 DETIK):
 - Panjang narasi harus realistis dibacakan dalam durasi 30 hingga 45 detik (maksimal absolut 60 detik).
 - Standar kecepatan bicara santai bahasa Indonesia adalah sekitar 130–150 kata per menit (~70 hingga 120 kata per script).
-- Alur struktur narasi: Hook Pembuka → Masalah/Situasi → Solusi Produk → 1 Manfaat Utama & Demonstrasi Singkat → Alasan Membeli → Call To Action.
+- Alur struktur narasi: Hook Pembuka → Situasi Masalah → Solusi Produk → 1 Manfaat Utama & Demonstrasi Visual → Alasan Membeli → Call To Action.
 
 10. FOOTAGE VISUAL:
-- Wajib menyertakan minimal 4 instruksi adegan visual yang konkret, jelas, dan langsung selaras dengan narasi kata demi kata.
+- Wajib menyertakan minimal 4 instruksi adegan visual yang konkret, jelas, dan menjadi bukti visual dari narasi.
 - Jangan membuat instruksi footage yang generik atau abstrak.
 
-11. CALL TO ACTION (CTA MENJUAL TAPI TIDAK MEMAKSA):
-- CTA harus tetap menjual dan mengarahkan konversi tetapi tidak terasa memaksa atau hard-selling berlebihan (misal: mengarahkan ke keranjang kuning secara natural dan relevan dengan solusi yang dibahas).
+11. CALL TO ACTION (CTA NATURAL SESUAI TINGKAT NIAT BELI):
+- CTA harus natural dan sesuai tingkat niat beli calon pembeli, bukan template hard selling yang memaksa (misal: mengarahkan ke keranjang kuning secara wajar sesuai solusi yang baru saja dijelaskan).
 
 12. CAPTION & TEPAT 5 HASHTAG:
 - Caption: Wajib TEPAT 1 (satu) kalimat pendek yang menjual, persuasif, natural, dan tidak hiperbola.
 - Hashtags: Wajib TEPAT 5 (lima) tagar relevan yang diawali dengan tanda pagar (#).
 
-13. QUALITY SELF-CHECK SEBELUM MENGEMBALIKAN OUTPUT:
-- Periksa kembali: Apakah narasi lulus "Uji Voice Note"? Apakah hanya fokus pada 1 manfaat utama? Apakah bebas dari kata template affiliate klise ("wajib", "rahasia", "dijamin")? Jika ada bagian yang kaku, tulis ulang sebelum membalas.
+13. QUALITY SELF-CHECK INTERNAL SEBELUM MENGEMBALIKAN OUTPUT:
+Setelah draft naskah selesai, lakukan pemeriksaan internal berikut:
+- Apakah terdengar seperti manusia asli saat dibacakan?
+- Apakah nyaman diucapkan tanpa belitan lidah?
+- Apakah tidak seperti iklan kaku, brosur, atau marketplace?
+- Apakah 1 benefit utamanya jelas dan memiliki sebab-akibat yang nyata dengan fitur?
+- Apakah faktanya aman, tanpa klaim palsu/angka buatan/testimoni fiktif?
+- Apakah masalahnya tepat sesuai produk?
+- Apakah footage menjadi bukti visual narasi?
+- Apakah setup shooting tetap konsisten terkunci?
+- Apakah durasi pembacaan narasi maksimal 60 detik?
+JIKA GAGAL PADA SALAH SATU POIN DI ATAS, TULIS ULANG SEBELUM MENGEMBALIKAN OUTPUT FINAL.
 
 =======================================================
 KEMBALIKAN HANYA JSON MURNI DENGAN STRUKTUR PERSIS BERIKUT:
