@@ -14,14 +14,14 @@ TUGAS UTAMA:
 Analisis dan identifikasi seluruh informasi produk secara faktual, tajam, dan akurat berdasarkan tampilan visual dan teks pada 5 foto yang diberikan.
 
 PRINSIP EVIDENCE FIRST & KONVERSI BENEFIT:
-1. EVIDENCE FIRST:
+1. EVIDENCE FIRST & EVIDENCE GATE:
    - Pisahkan secara tegas: fakta visual eksplisit dari foto, inferensi aman yang logis, dan informasi yang tidak diketahui.
-   - Informasi yang tidak diketahui JANGAN PERNAH digunakan sebagai fakta.
+   - Setiap klaim faktual harus berasal dari fakta yang terlihat jelas pada foto atau data user. Informasi yang tidak diketahui JANGAN PERNAH digunakan sebagai fakta.
    - Dilarang mengarang angka, durasi, harga, penghematan, performa, hasil, garansi, sertifikasi, klaim teknis, klaim medis, atau perbandingan yang tidak ada di foto.
    - PRINSIP: Lebih baik klaim sederhana yang benar daripada klaim menarik tetapi tidak dapat dibuktikan.
 2. KETEPATAN MASALAH & SEBAB-AKIBAT (FEATURE → BENEFIT):
-   - Jangan mengubah masalah produk menjadi masalah lain. Pastikan masalah, fitur, dan manfaat tetap murni sesuai produk.
-   - Setiap benefit harus memiliki hubungan sebab-akibat yang jelas: Fitur → Fungsi → Manfaat konkret bagi pengguna. Jika tidak jelas, jangan memaksakan benefit.
+   - Masalah harus sesuai produk: Jangan mengubah masalah produk menjadi masalah lain hanya demi membuat hook lebih menarik.
+   - Setiap benefit harus memiliki hubungan sebab-akibat yang jelas dan logis: Fitur → Fungsi → Manfaat konkret bagi pengguna. Jika tidak jelas, jangan memaksakan benefit.
 3. IDENTIFIKASI TARGET & MASALAH: Tentukan siapa pembeli yang paling membutuhkan produk ini dan apa rasa repot / rasa kesal / kebutuhan spesifik yang dapat dibantu oleh produk ini.
 4. ATURAN FALLBACK DATA:
    - Jika informasi tertentu tidak terlihat jelas: isi dengan "Tidak terlihat jelas di foto".
@@ -107,8 +107,8 @@ JUMLAH SCRIPT YANG DIHASILKAN: ${jumlahScript}
 FONDASI SEBELUM MENULIS SETIAP SCRIPT (CORE SELLING IDEA):
 Sebelum menulis tiap script, tentukan:
 1. Moment of Need (Kapan/di momen situasi apa produk ini sangat dibutuhkan)
-2. Masalah Utama (Rasa repot / rasa kesal spesifik yang ingin diselesaikan, murni sesuai produk)
-3. Satu Core Selling Idea (Ide pokok pesan yang membuat naskah ini unik dan menarik)
+2. Masalah Utama (Rasa repot / rasa kesal spesifik yang ingin diselesaikan, murni sesuai produk tanpa diubah-ubah)
+3. Satu Core Selling Idea (1 ide penjualan utama dan beberapa fakta pendukung yang benar-benar relevan)
 4. Satu Benefit Utama (Manfaat konkret terbesar yang terhubung logis dengan fitur produk)
 5. Alasan Membeli (Mengapa produk ini layak dipertimbangkan dibanding cara lama)
 Jangan memasukkan semua keunggulan produk sekaligus ke dalam satu script.
@@ -116,16 +116,20 @@ Jangan memasukkan semua keunggulan produk sekaligus ke dalam satu script.
 
 ATURAN KUALITAS NASKAH (WAJIB DIPATUHI SECARA KETAT):
 
-1. EVIDENCE FIRST & FAKTA:
-- Pisahkan secara internal: fakta produk, inferensi aman, dan informasi yang tidak diketahui. Informasi yang tidak diketahui JANGAN digunakan sebagai fakta.
-- Dilarang keras mengarang angka, durasi, harga, penghematan, performa, hasil, garansi, sertifikasi, klaim teknis, klaim medis, atau perbandingan yang tidak diberikan.
+1. EVIDENCE GATE & CLAIM AUDIT:
+- Setiap klaim faktual dalam script, CTA, caption, dan footage HARUS berasal dari fakta yang diberikan user atau terlihat jelas pada foto. Jika tidak punya dasar, JANGAN gunakan.
+- Lakukan Claim Audit: periksa angka, harga, durasi, performa, hasil, penghematan, sertifikasi, keamanan, pengalaman, dan perbandingan. Jika sumbernya tidak jelas, hapus atau ubah menjadi pernyataan aman.
 - PRINSIP: Lebih baik klaim sederhana yang benar daripada klaim menarik tetapi tidak dapat dibuktikan.
 
 2. DILARANG MENGARANG PENGALAMAN PRIBADI:
 - Jangan menggunakan klaim pengalaman pribadi palsu seperti "saya selalu pakai", "andalan saya", "saya sudah coba", "setelah saya pakai selama...", testimoni buatan, atau angka hasil fiktif, kecuali data pengalaman tersebut memang eksplisit diberikan user.
 - Gunakan sudut pandang review objektif yang aman dan persuasif: "Yang paling ngebantu dari produk ini...", "Biar nggak ribet pas...", "Desainnya ini fokus di kemudahan...".
 
-3. NATURAL INDONESIAN & UJI VOICE NOTE:
+3. MASALAH HARUS SESUAI PRODUK:
+- Jangan mengubah masalah produk menjadi masalah lain hanya demi membuat hook lebih menarik.
+- Pastikan masalah yang diangkat, fitur yang disorot, dan manfaat yang dijelaskan tetap murni sesuai produk aslinya.
+
+4. NATURAL INDONESIAN & UJI VOICE NOTE:
 - Narasi harus terdengar seperti creator Indonesia sungguhan sedang berbicara santai kepada temannya.
 - HINDARI: gaya brosur, deskripsi marketplace, artikel, iklan kaku, bahasa terlalu formal/baku, slang yang dipaksakan, dan frase AI/copywriter generik.
 - Gunakan kata sederhana, kalimat mengalir, dan ritme percakapan yang bervariasi.
@@ -133,18 +137,18 @@ ATURAN KUALITAS NASKAH (WAJIB DIPATUHI SECARA KETAT):
 - JANGAN MEMAKSAKAN kata penghubung klise (seperti "nah", "jadi", "makanya", "yuk simak") di awal setiap kalimat.
 - Seluruh teks naskah, hook, arahan footage, CTA, dan caption TIDAK BOLEH mengandung emoji apa pun.
 
-4. SHOW, DON'T LABEL & SEBAB-AKIBAT (FEATURE → BENEFIT):
-- Jangan hanya mengatakan: "praktis", "bagus", "efisien", "nyaman", atau "berkualitas".
+5. SHOW, DON'T LABEL & SEBAB-AKIBAT (FEATURE → BENEFIT):
+- Jangan sekadar mengatakan: "praktis", "bagus", "efisien", "nyaman", atau "berkualitas".
 - Tunjukkan situasi konkret yang membuat manfaat tersebut terasa nyata.
-- Alur logis: Fitur → Fungsi → Manfaat nyata bagi penonton.
+- Pastikan hubungan sebab-akibat benar-benar logis: Fitur → Fungsi → Manfaat nyata bagi penonton. Jangan memaksakan benefit yang tidak berkaitan dengan fitur.
 - Jangan menjelaskan bahwa "produk itu bagus". Tunjukkan situasi kenapa produk itu berguna, sehingga penonton menyimpulkan sendiri kegunaannya.
 
-5. HOOK ANTI-KLISE:
+6. HOOK ANTI-KLISE:
 - Hook 3 detik pertama harus: menarik, spesifik, relevan, natural, dan tidak clickbait.
 - JANGAN bergantung pada template klise pembuka seperti "kalau kamu...", "buat kamu yang...", "wajib punya ini...", "rahasia...", "mumpung...", "dijamin...", "jangan beli ini sebelum...".
 - Variasikan jenis hook: Problem relatable, Curiosity visual, Situasi nyata, Insight menarik, Hasil transformasi, atau Sudut pandang contrarian.
 
-6. VARIASI MULTI-SCRIPT (${jumlahScript} Script Berbeda):
+7. VARIASI MULTI-SCRIPT (${jumlahScript} Script Berbeda):
 ${
   jumlahScript > 1
     ? `- Jika jumlah script > 1, setiap script dari ke-${jumlahScript} naskah WAJIB memiliki cerita penjualan yang berbeda (bukan sekadar memparafrase kata).
@@ -158,46 +162,44 @@ ${
     : `- Buat script dengan angle penjualan dan 1 fokus manfaat yang paling tajam dan relevan.`
 }
 
-7. ATURAN FOOTAGE & SETUP SHOOTING TERKUNCI:
+8. FOOTAGE & SETUP SHOOTING TERKUNCI:
 - Setup shooting tetap sama untuk seluruh batch: lokasi tetap, equipment utama tetap, properti utama tetap, dan lingkungan tetap.
 - Boleh berbeda: angle kamera, framing, shot size (close-up/medium/POV), aksi, demonstrasi, dan urutan footage.
 - Jangan meminta alat, lokasi, atau kru baru. 100% footage harus dapat direkam oleh satu orang (solo creator).
-- Footage harus mendukung core selling idea dan menjadi bukti visual dari narasi:
+- Footage harus mendukung dan membuktikan core selling idea serta narasi secara visual:
   * Jika narasi menyebut masalah → footage menunjukkan masalah.
   * Jika narasi menyebut fitur → footage menunjukkan fitur.
   * Jika narasi menyebut manfaat → footage membantu membuktikan manfaat.
 
-8. METODE DUBBING (${dubbing}):
+9. METODE DUBBING (${dubbing}):
 ${
   dubbing === "Suara sendiri"
     ? `- Suara sendiri: gaya bahasa lisan yang sangat natural, conversational, mengalir santai, dan nyaman diucapkan.`
     : `- Suara AI: kalimat lebih pendek, jelas, satu gagasan per kalimat, tanda baca rapi dan mudah diucapkan oleh Text-to-Speech.`
 }
 
-9. DURASI & PANJANG KATA (TARGET 30–45 DETIK, MAX 60 DETIK):
-- 30–45 detik adalah sasaran ideal (sekitar 70 hingga 120 kata), BUKAN batas minimum kaku. Jika pesan sudah lengkap dan padat sebelum 30 detik, jangan menambahkan kata-kata pengisi (filler).
+10. DURASI & PANJANG KATA (TARGET 30–45 DETIK, MAX 60 DETIK):
+- 30–45 detik adalah target ideal (sekitar 70 hingga 120 kata), BUKAN batas minimum kaku. Jika pesan sudah lengkap dan padat sebelum 30 detik, jangan menambahkan kata-kata pengisi (filler).
 - 60 detik adalah batas maksimum keras yang tidak boleh dilewati.
 
-10. CALL TO ACTION (CTA):
-- CTA natural, relevan dengan solusi yang dibahas, dan tidak hard-selling secara berlebihan (misal: mengarahkan ke keranjang kuning secara wajar). Boleh bervariasi antar script.
-
-11. CAPTION & TEPAT 5 HASHTAG:
-- Caption: Tepat 1 kalimat. Natural, singkat, relevan, dan menjual tanpa klaim palsu.
+11. CTA DAN CAPTION:
+- CTA natural, relevan dengan solusi yang dibahas, tidak hard-selling secara berlebihan (misal: mengarahkan ke keranjang kuning secara wajar), dan tetap tunduk pada Evidence Gate. Boleh bervariasi antar script.
+- Caption: Tepat 1 kalimat. Natural, singkat, relevan, menjual tanpa klaim palsu, dan tunduk pada Evidence Gate.
 - Hashtags: Tepat 5 hashtag relevan diawali tanda pagar (#).
 
 12. SELF-REVIEW INTERNAL SEBELUM OUTPUT:
 Sebelum menghasilkan output final, lakukan pemeriksaan internal berikut:
-- Apakah faktanya benar dan bebas klaim palsu/angka buatan?
-- Apakah masalahnya tepat sesuai produk?
-- Apakah benefitnya logis (fitur → fungsi → manfaat)?
+- Apakah seluruh klaim lolos Evidence Gate & Claim Audit?
+- Apakah masalahnya tepat sesuai produk (tidak diubah demi hook)?
+- Apakah benefitnya memiliki hubungan sebab-akibat yang logis dengan fitur?
 - Apakah terdengar seperti manusia asli saat dibacakan?
 - Apakah nyaman diucapkan tanpa belitan lidah?
 - Apakah tidak seperti iklan kaku, brosur, atau marketplace?
-- Apakah core selling idea jelas dan fokus pada 1 manfaat utama?
-- Apakah footage menjadi bukti visual narasi?
+- Apakah core selling idea jelas dan fokus pada 1 ide penjualan utama?
+- Apakah footage membuktikan narasi secara visual?
 - Apakah setup shooting tetap konsisten terkunci untuk solo creator?
 - Apakah durasi pembacaan narasi ≤ 60 detik?
-JIKA GAGAL PADA SALAH SATU POIN DI ATAS, TULIS ULANG SEBELUM MENGEMBALIKAN OUTPUT FINAL.
+JIKA GAGAL PADA SALAH SATU POIN DI ATAS, REWRITE SAMPAI LOLOS SEBELUM MENGEMBALIKAN OUTPUT FINAL.
 (Jangan tampilkan proses pemeriksaan internal kepada user).
 
 =======================================================
