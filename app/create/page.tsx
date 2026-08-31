@@ -409,21 +409,21 @@ export default function CreateProjectPage() {
                     Nama Produk
                   </p>
                   <p className="font-body text-primary" style={{ fontWeight: 600 }}>
-                    {analysis.produk}
+                    {analysis.faktaLangsung.produk}
                   </p>
                 </div>
                 <div>
                   <p className="font-label text-on-surface-variant" style={{ marginBottom: "4px" }}>
                     Kategori
                   </p>
-                  <p className="font-body text-primary">{analysis.kategoriProduk}</p>
+                  <p className="font-body text-primary">{analysis.inferensiAman.kategoriProduk}</p>
                 </div>
-                {analysis.hargaPromo && (
+                {analysis.faktaLangsung.hargaPromo && (
                   <div>
                     <p className="font-label text-on-surface-variant" style={{ marginBottom: "4px" }}>
                       Harga / Promo
                     </p>
-                    <p className="font-body text-primary">{analysis.hargaPromo}</p>
+                    <p className="font-body text-primary">{analysis.faktaLangsung.hargaPromo}</p>
                   </div>
                 )}
               </div>
@@ -455,7 +455,7 @@ export default function CreateProjectPage() {
                 <h2 className="font-subheading text-primary">Target Pengguna</h2>
               </div>
               <p className="font-body text-primary" style={{ lineHeight: 1.6 }}>
-                {analysis.targetPengguna}
+                {analysis.interpretasiStrategis.targetPengguna}
               </p>
             </div>
 
@@ -485,7 +485,7 @@ export default function CreateProjectPage() {
                 <h2 className="font-subheading text-primary">Masalah Utama</h2>
               </div>
               <p className="font-body text-primary" style={{ lineHeight: 1.6 }}>
-                {analysis.masalahYangDiselesaikan}
+                {analysis.interpretasiStrategis.masalahYangDiselesaikan}
               </p>
             </div>
 
@@ -524,9 +524,9 @@ export default function CreateProjectPage() {
                 }}
                 className="font-body text-primary"
               >
-                {analysis.manfaat && analysis.manfaat.length > 0
-                  ? analysis.manfaat.map((b, i) => <li key={i}>{b}</li>)
-                  : analysis.fitur?.map((f, i) => <li key={i}>{f}</li>)}
+                {analysis.interpretasiStrategis.manfaat && analysis.interpretasiStrategis.manfaat.length > 0
+                  ? analysis.interpretasiStrategis.manfaat.map((b: string, i: number) => <li key={i}>{b}</li>)
+                  : analysis.faktaLangsung.fitur?.map((f: string, i: number) => <li key={i}>{f}</li>)}
               </ul>
             </div>
 
@@ -556,12 +556,12 @@ export default function CreateProjectPage() {
                 <h2 className="font-subheading text-primary">Fungsi & Nilai Jual</h2>
               </div>
               <p className="font-body text-primary" style={{ lineHeight: 1.6 }}>
-                {analysis.fungsiUtama || analysis.informasiPenting}
+                {analysis.inferensiAman.fungsiUtama || analysis.faktaLangsung.informasiPenting}
               </p>
             </div>
 
             {/* Informasi Penting Lainnya */}
-            {analysis.informasiPenting && (
+            {analysis.faktaLangsung.informasiPenting && (
               <div
                 className="bg-surface-container-lowest border-outline-variant"
                 style={{
@@ -587,7 +587,7 @@ export default function CreateProjectPage() {
                   <h2 className="font-subheading text-primary">Informasi Penting Lainnya</h2>
                 </div>
                 <p className="font-body text-primary" style={{ lineHeight: 1.6 }}>
-                  {analysis.informasiPenting}
+                  {analysis.faktaLangsung.informasiPenting}
                 </p>
               </div>
             )}

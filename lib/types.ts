@@ -1,18 +1,24 @@
 export type ApiStatus = "idle" | "checking" | "connected" | "error";
 
 export interface ProductAnalysis {
-  produk: string;
-  kategoriProduk: string;
-  fungsiUtama: string;
-  fitur: string[];
-  spesifikasi: string[];
-  caraPenggunaan: string[];
-  targetPengguna: string;
-  masalahYangDiselesaikan: string;
-  manfaat: string[];
-  keunggulan: string[];
-  informasiPenting: string;
-  hargaPromo: string;
+  faktaLangsung: {
+    produk: string;
+    fitur: string[];
+    spesifikasi: string[];
+    caraPenggunaan: string[];
+    informasiPenting: string;
+    hargaPromo: string;
+  };
+  inferensiAman: {
+    kategoriProduk: string;
+    fungsiUtama: string;
+  };
+  interpretasiStrategis: {
+    targetPengguna: string;
+    masalahYangDiselesaikan: string;
+    manfaat: string[];
+    keunggulan: string[];
+  };
 }
 
 export interface CreatorConditions {
@@ -33,6 +39,9 @@ export interface SetupShooting {
 
 export interface Script {
   angle: string;
+  targetPengguna: string;
+  masalahUtama: string;
+  benefitUtama: string;
   hook: string;
   narasi: string;
   footage: string[];
@@ -43,10 +52,6 @@ export interface Script {
 
 export interface GeneratedResult {
   analisisProduk: ProductAnalysis;
-  targetPengguna: string;
-  masalahUtama: string;
-  benefitUtama: string;
-  anglePenjualan: string;
   setupShooting: SetupShooting;
   scripts: Script[];
 }

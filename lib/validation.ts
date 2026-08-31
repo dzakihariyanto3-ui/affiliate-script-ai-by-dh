@@ -54,53 +54,55 @@ export function validateProductAnalysis(data: any): {
     return { valid: false, errors: ["Data analisis produk kosong atau tidak valid."] };
   }
 
-  // Normalisasi key (dukung camelCase maupun snake_case)
-  const produk = toStringSafe(data.produk || data.nama_produk || data.namaProduk);
-  const kategoriProduk = toStringSafe(
-    data.kategoriProduk || data.kategori_produk || data.kategori
-  );
-  const fungsiUtama = toStringSafe(
-    data.fungsiUtama || data.fungsi_utama || data.fungsi
-  );
-  const targetPengguna = toStringSafe(
-    data.targetPengguna || data.target_pengguna || data.targetAudience
-  );
-  const masalahYangDiselesaikan = toStringSafe(
-    data.masalahYangDiselesaikan ||
-      data.masalah_yang_diselesaikan ||
-      data.masalah ||
-      data.solusiMasalah
-  );
-  const informasiPenting = toStringSafe(
-    data.informasiPenting ||
-      data.informasi_penting ||
-      data.catatanPenting ||
-      "Tidak ada catatan khusus."
-  );
-  const hargaPromo = toStringSafe(
-    data.hargaPromo || data.harga_promo || data.harga || "Tidak tercantum di foto."
-  );
+  // Support both flat (legacy) and 3-tier (new) schema
+  const fl = data.faktaLangsung && typeof data.faktaLangsung === "object" ? data.faktaLangsung : data;
+  const ia = data.inferensiAman && typeof data.inferensiAman === "object" ? data.inferensiAman : data;
+  const is_ = data.interpretasiStrategis && typeof data.interpretasiStrategis === "object" ? data.interpretasiStrategis : data;
 
-  const fitur = toStringArraySafe(data.fitur || data.fitur_utama || data.features, [
+  // faktaLangsung fields
+  const produk = toStringSafe(fl.produk || fl.nama_produk || fl.namaProduk);
+  const fitur = toStringArraySafe(fl.fitur || fl.fitur_utama || fl.features, [
     "Fitur sesuai tampilan foto produk.",
   ]);
   const spesifikasi = toStringArraySafe(
-    data.spesifikasi || data.spesifikasi_produk || data.specs,
+    fl.spesifikasi || fl.spesifikasi_produk || fl.specs,
     ["Spesifikasi sesuai tampilan foto produk."]
   );
   const caraPenggunaan = toStringArraySafe(
-    data.caraPenggunaan ||
-      data.cara_penggunaan ||
-      data.cara_pakai ||
-      data.caraPakai,
+    fl.caraPenggunaan || fl.cara_penggunaan || fl.cara_pakai || fl.caraPakai,
     ["Gunakan produk sesuai petunjuk."]
   );
+  const informasiPenting = toStringSafe(
+    fl.informasiPenting || fl.informasi_penting || fl.catatanPenting || "Tidak ada catatan khusus."
+  );
+  const hargaPromo = toStringSafe(
+    fl.hargaPromo || fl.harga_promo || fl.harga || "Tidak tercantum di foto."
+  );
+
+  // inferensiAman fields
+  const kategoriProduk = toStringSafe(
+    ia.kategoriProduk || ia.kategori_produk || ia.kategori
+  );
+  const fungsiUtama = toStringSafe(
+    ia.fungsiUtama || ia.fungsi_utama || ia.fungsi
+  );
+
+  // interpretasiStrategis fields
+  const targetPengguna = toStringSafe(
+    is_.targetPengguna || is_.target_pengguna || is_.targetAudience
+  );
+  const masalahYangDiselesaikan = toStringSafe(
+    is_.masalahYangDiselesaikan ||
+      is_.masalah_yang_diselesaikan ||
+      is_.masalah ||
+      is_.solusiMasalah
+  );
   const manfaat = toStringArraySafe(
-    data.manfaat || data.manfaat_produk || data.benefits,
+    is_.manfaat || is_.manfaat_produk || is_.benefits,
     ["Memberikan kemudahan penggunaan."]
   );
   const keunggulan = toStringArraySafe(
-    data.keunggulan || data.keunggulan_produk || data.advantages,
+    is_.keunggulan || is_.keunggulan_produk || is_.advantages,
     ["Praktis dan mudah digunakan."]
   );
 
@@ -111,18 +113,24 @@ export function validateProductAnalysis(data: any): {
   if (!masalahYangDiselesaikan) errors.push("Masalah yang diselesaikan tidak valid.");
 
   const normalized: ProductAnalysis = {
-    produk: produk || "Produk",
-    kategoriProduk: kategoriProduk || "Umum",
-    fungsiUtama: fungsiUtama || "Fungsi produk",
-    fitur,
-    spesifikasi,
-    caraPenggunaan,
-    targetPengguna: targetPengguna || "Pengguna umum",
-    masalahYangDiselesaikan: masalahYangDiselesaikan || "Kebutuhan harian",
-    manfaat,
-    keunggulan,
-    informasiPenting,
-    hargaPromo,
+    faktaLangsung: {
+      produk: produk || "Produk",
+      fitur,
+      spesifikasi,
+      caraPenggunaan,
+      informasiPenting,
+      hargaPromo,
+    },
+    inferensiAman: {
+      kategoriProduk: kategoriProduk || "Umum",
+      fungsiUtama: fungsiUtama || "Fungsi produk",
+    },
+    interpretasiStrategis: {
+      targetPengguna: targetPengguna || "Pengguna umum",
+      masalahYangDiselesaikan: masalahYangDiselesaikan || "Kebutuhan harian",
+      manfaat,
+      keunggulan,
+    },
   };
 
   if (errors.length === 0) {
@@ -175,6 +183,9 @@ function validateScript(script: any, index: number): { errors: string[]; script:
   const no = index + 1;
 
   const angle = toStringSafe(script?.angle || script?.sudut_penjualan, `Angle Penjualan ${no}`);
+  const targetPengguna = toStringSafe(script?.targetPengguna || script?.target_pengguna, "Target pengguna umum");
+  const masalahUtama = toStringSafe(script?.masalahUtama || script?.masalah_utama, "Masalah sehari-hari yang membutuhkan solusi praktis");
+  const benefitUtama = toStringSafe(script?.benefitUtama || script?.benefit_utama, "Memberikan kemudahan dan hasil optimal");
   const hook = toStringSafe(script?.hook || script?.pembuka, `Hook ${no}`);
   const narasi = toStringSafe(script?.narasi || script?.naskah, `Narasi script ${no}`);
   const cta = toStringSafe(script?.cta || script?.call_to_action, "Klik keranjang kuning sekarang.");
@@ -233,6 +244,9 @@ function validateScript(script: any, index: number): { errors: string[]; script:
     errors,
     script: {
       angle,
+      targetPengguna,
+      masalahUtama,
+      benefitUtama,
       hook,
       narasi,
       footage,
@@ -267,6 +281,7 @@ export function validateGeneratedResult(
     errors.push(...setupValidation.errors);
   }
 
+  // Support scripts at root level (new schema) or nested in data.scripts
   const rawScripts = Array.isArray(data.scripts) ? data.scripts : [];
   if (rawScripts.length === 0) {
     errors.push("Daftar script kosong.");
@@ -281,29 +296,8 @@ export function validateGeneratedResult(
     validatedScripts.push(res.script);
   });
 
-  const targetPengguna = toStringSafe(
-    data.targetPengguna || data.target_pengguna || analysisValidation.data?.targetPengguna,
-    "Target pengguna umum"
-  );
-  const masalahUtama = toStringSafe(
-    data.masalahUtama || data.masalah_utama || analysisValidation.data?.masalahYangDiselesaikan,
-    "Masalah sehari-hari yang membutuhkan solusi praktis"
-  );
-  const benefitUtama = toStringSafe(
-    data.benefitUtama || data.benefit_utama || analysisValidation.data?.manfaat?.[0],
-    "Memberikan kemudahan dan hasil optimal"
-  );
-  const anglePenjualan = toStringSafe(
-    data.anglePenjualan || data.angle_penjualan || "Solusi praktis dan hemat waktu",
-    "Fokus pada efisiensi dan kemudahan"
-  );
-
   const finalResult: GeneratedResult = {
     analisisProduk: analysisValidation.data!,
-    targetPengguna,
-    masalahUtama,
-    benefitUtama,
-    anglePenjualan,
     setupShooting: setupValidation.data!,
     scripts: validatedScripts.slice(0, requestedCount),
   };
@@ -318,4 +312,4 @@ export function validateGeneratedResult(
   }
 
   return { valid: false, errors };
-}
+}

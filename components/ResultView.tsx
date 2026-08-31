@@ -98,7 +98,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
               Menghasilkan Script
             </h1>
             <p className="font-caption text-on-surface-variant" style={{ marginTop: "2px" }}>
-              Proyek: {result.analisisProduk.produk} ({result.scripts.length} Script Siap Pakai)
+              Proyek: {result.analisisProduk.faktaLangsung.produk} ({result.scripts.length} Script Siap Pakai)
             </p>
           </div>
 
@@ -217,23 +217,16 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
               >
                 <div>
                   <p className="font-label text-primary" style={{ marginBottom: "2px" }}>
-                    Target Audiens:
+                    Fungsi Utama:
                   </p>
-                  <p style={{ fontSize: "14px" }}>{result.targetPengguna}</p>
+                  <p style={{ fontSize: "14px" }}>{result.analisisProduk.inferensiAman.fungsiUtama}</p>
                 </div>
 
                 <div>
                   <p className="font-label text-primary" style={{ marginBottom: "2px" }}>
-                    Masalah Utama:
+                    Target Pengguna (Umum):
                   </p>
-                  <p style={{ fontSize: "14px" }}>{result.masalahUtama}</p>
-                </div>
-
-                <div>
-                  <p className="font-label text-primary" style={{ marginBottom: "2px" }}>
-                    Benefit Utama:
-                  </p>
-                  <p style={{ fontSize: "14px" }}>{result.benefitUtama}</p>
+                  <p style={{ fontSize: "14px" }}>{result.analisisProduk.interpretasiStrategis.targetPengguna}</p>
                 </div>
 
                 <div>

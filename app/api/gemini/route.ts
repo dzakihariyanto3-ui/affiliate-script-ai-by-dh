@@ -153,29 +153,13 @@ export async function POST(request: NextRequest) {
         model: requestedModel,
       });
 
-      // Pastikan analisisProduk dan setupShooting selalu sinkron dengan data yang sudah di-lock sebelumnya
+      // Inject analisisProduk dan setupShooting dari input yang sudah di-lock
+      // (AI tidak lagi mengembalikan keduanya dalam schema baru)
       const dataToValidate = {
+        ...(typeof rawData === "object" ? rawData : {}),
         analisisProduk: analysis,
         setupShooting: setup,
-        ...(typeof rawData === "object" ? rawData : {}),
       };
-
-      // Jika analisisProduk/setupShooting dari AI kurang lengkap, tetap pertahankan data valid sebelumnya
-      if (
-        !dataToValidate.analisisProduk ||
-        typeof dataToValidate.analisisProduk !== "object" ||
-        Object.keys(dataToValidate.analisisProduk).length === 0
-      ) {
-        dataToValidate.analisisProduk = analysis;
-      }
-
-      if (
-        !dataToValidate.setupShooting ||
-        typeof dataToValidate.setupShooting !== "object" ||
-        Object.keys(dataToValidate.setupShooting).length === 0
-      ) {
-        dataToValidate.setupShooting = setup;
-      }
 
       const validation = validateGeneratedResult(dataToValidate, jumlahScript);
 
