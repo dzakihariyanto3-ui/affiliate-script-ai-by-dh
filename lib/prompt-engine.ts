@@ -160,26 +160,26 @@ DATA PRODUK — TIGA LEVEL EPISTEMIC
 LEVEL 1 — FAKTA LANGSUNG
 (Sumber kebenaran tertinggi. Gunakan langsung sebagai fakta dalam narasi.)
 
-- Produk: ${JSON.stringify(fl.produk)}
+- Produk: "${fl.produk}"
 - Fitur: ${JSON.stringify(fl.fitur)}
 - Spesifikasi: ${JSON.stringify(fl.spesifikasi)}
 - Cara Penggunaan: ${JSON.stringify(fl.caraPenggunaan)}
-- Informasi Penting: ${JSON.stringify(fl.informasiPenting)}
-- Harga/Promo: ${JSON.stringify(fl.hargaPromo)}
+- Informasi Penting: "${fl.informasiPenting}"
+- Harga/Promo: "${fl.hargaPromo}"
 
 LEVEL 2 — INFERENSI AMAN
 (Boleh digunakan sebagai dasar narasi. Bukan fakta keras.)
 
-- Kategori Produk: ${JSON.stringify(ia.kategoriProduk)}
-- Fungsi Utama: ${JSON.stringify(ia.fungsiUtama)}
+- Kategori Produk: "${ia.kategoriProduk}"
+- Fungsi Utama: "${ia.fungsiUtama}"
 
 LEVEL 3 — INTERPRETASI STRATEGIS
 (Gunakan hanya untuk memilih angle dan membangun konteks.
 Jangan ubah menjadi klaim keras.
 Jika bertentangan dengan Level 1, abaikan atau formulasikan lebih aman.)
 
-- Target Pengguna: ${JSON.stringify(is_.targetPengguna)}
-- Masalah yang Diselesaikan: ${JSON.stringify(is_.masalahYangDiselesaikan)}
+- Target Pengguna: "${is_.targetPengguna}"
+- Masalah yang Diselesaikan: "${is_.masalahYangDiselesaikan}"
 - Manfaat: ${JSON.stringify(is_.manfaat)}
 - Keunggulan: ${JSON.stringify(is_.keunggulan)}
 
@@ -197,7 +197,7 @@ METODE DUBBING: ${dubbing}
 JUMLAH SCRIPT: ${jumlahScript}
 
 ═══════════════════════════════════════════════════════
-16 PRINSIP PEMBUATAN SCRIPT
+17 PRINSIP PEMBUATAN SCRIPT
 ═══════════════════════════════════════════════════════
 
 ── 1. CLAIM TRANSFORMATION RULE ──────────────────────
@@ -320,7 +320,30 @@ Alur wajib: Fitur Nyata (Level 1) → Fungsi yang Terlihat → Manfaat Nyata bag
 Tunjukkan situasi konkret daripada menempelkan label kata sifat ("praktis", "bagus", "hemat").
 Kata sifat boleh digunakan jika situasi konkretnya sudah ditunjukkan terlebih dahulu.
 
-── 8. CORE SELLING IDEA — 1 IDE PER SCRIPT ──────────
+── 8. SPEC → DAMPAK NYATA (WAJIB) ──────────────────
+
+Jangan sebut angka teknis yang tidak langsung bermakna bagi penonton awam.
+Selalu terjemahkan spesifikasi teknis ke dalam dampak nyata yang bisa dirasakan.
+
+Penonton tidak tahu artinya "120000PA", "15000mAh", atau "700W".
+Yang mereka butuhkan adalah: apa artinya itu buat saya dalam kehidupan nyata?
+
+Angka yang BOLEH disebut langsung karena sudah bermakna bagi awam:
+- Harga: "114 ribuan"
+- Ukuran fisik yang bisa dibayangkan: "pipa 7 meter"
+- Jumlah item: "isi 5 bungkus"
+
+Angka teknis yang WAJIB diterjemahkan terlebih dahulu:
+- Kapasitas baterai: JANGAN "15000mAh" → GANTI: "baterinya cukup buat beberapa kali cuci motor"
+- Tekanan: JANGAN "120000PA" → GANTI: "tekanannya kenceng, tanah di kolong motor bisa langsung rontok"
+- Daya motor: JANGAN "700W" → GANTI: jelaskan dampaknya, atau skip jika tidak ada cara menjelaskan
+- Flow rate: JANGAN "2,4 liter per menit" → GANTI: "alirannya lumayan deras" atau skip
+- Kode baterai: JANGAN "998VF" → GANTI: jelaskan apa yang bisa dilakukan dengan baterai itu
+
+Rumus wajib: SPEC → APA ARTINYA → APA YANG BISA DIRASAKAN PENONTON
+Bukan: SPEC → langsung disebut ke penonton
+
+── 9. CORE SELLING IDEA — 1 IDE PER SCRIPT ──────────
 
 Setiap script fokus pada satu cerita penjualan:
 satu moment of need, satu masalah, satu core selling idea, satu benefit utama.
@@ -330,7 +353,7 @@ Jangan menumpuk semua fitur dalam satu script.
 Alur per script:
 Situasi Nyata → Masalah Relevan → Produk sebagai Solusi → Bukti Visual → Alasan Logis untuk Beli
 
-── 9. PERSUASION — RELEVANSI, BUKAN HYPE ────────────
+── 10. PERSUASION — RELEVANSI, BUKAN HYPE ───────────
 
 Bangun persuasi lewat relevansi situasi penonton dengan produk — bukan dramatisasi.
 
@@ -343,7 +366,7 @@ DILARANG:
 - Urgency palsu: "hanya hari ini", "limited"
 - Klaim tanpa dasar: "pasti cocok", "dijamin", "100% terbukti"
 
-── 10. SETUP LOCK — KEPATUHAN MUTLAK ────────────────
+── 11. SETUP LOCK — KEPATUHAN MUTLAK ────────────────
 
 Cek wajib sebelum finalisasi setiap footage instruction:
 "Apakah footage ini bisa dieksekusi persis dengan kondisi shooting yang tersedia?"
@@ -355,7 +378,7 @@ tidak ada wajah, tidak ada talking head, tidak ada full body, tidak ada creator 
 
 Variasi hanya boleh pada: framing, angle, shot size, aksi demonstrasi, urutan shot.
 
-── 11. SCRIPT DIVERSITY ──────────────────────────────
+── 12. SCRIPT DIVERSITY ──────────────────────────────
 
 Setiap script harus punya cerita penjualan yang berbeda secara substantif —
 bukan parafrase dari script sebelumnya.
@@ -365,7 +388,7 @@ hook pembuka, urutan dan jenis demonstrasi.
 
 Keakuratan fakta selalu lebih penting dari memaksakan variasi.
 
-── 12. DURASI & WORD COUNT ──────────────────────────
+── 13. DURASI & WORD COUNT ──────────────────────────
 
 Target: 30–45 detik. Maksimum keras: 60 detik.
 
@@ -376,7 +399,7 @@ Estimasi word count berdasarkan metode dubbing:
 
 Jika pesan sudah lengkap sebelum batas minimum, jangan tambahkan kata kosong.
 
-── 13. CTA — SOFT DAN NATURAL ───────────────────────
+── 14. CTA — SOFT DAN NATURAL ───────────────────────
 
 CTA harus terasa seperti saran jujur dari seseorang yang genuinely merekomendasikan —
 bukan penutup iklan yang sudah bisa ditebak.
@@ -392,43 +415,47 @@ Contoh arah yang benar:
 Hindari CTA yang terasa seperti template iklan atau terlalu formal.
 CTA tidak boleh membuat klaim baru atau janji yang tidak disebutkan dalam narasi.
 
-── 14. CAPTION & HASHTAG ────────────────────────────
+── 15. CAPTION & HASHTAG ────────────────────────────
 
 Caption: tepat 1 kalimat ringkas yang relevan dengan isi script — bukan pengulangan hook.
 Hashtag: tepat 5 hashtag relevan, diawali tanda pagar (#).
 
-── 15. SELF-REVIEW WAJIB SEBELUM OUTPUT ─────────────
+── 16. SELF-REVIEW WAJIB SEBELUM OUTPUT ─────────────
 
 Jalankan rantai audit ini sebelum setiap script difinalisasi:
 
-DRAFT → CEK KLAIM → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOKEN MARKERS → CEK SETUP → CEK DURASI → FINAL
+DRAFT → CEK KLAIM → CEK SPEC → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOKEN MARKERS → CEK SETUP → CEK DURASI → FINAL
 
 (a) Claim audit:
     Apakah semua klaim bisa ditelusuri ke Level 1 atau Level 2?
     Tidak ada angka baru, jaminan baru, generalisasi, atau pengalaman pribadi fiktif?
 
-(b) POV audit:
+(b) Spec audit:
+    Apakah ada angka teknis yang disebut langsung tanpa diterjemahkan ke dampak nyata?
+    (mAh, PA, Watt, liter/menit, kode baterai, dll) → wajib diterjemahkan atau dihapus.
+
+(c) POV audit:
     Apakah creator berperan sebagai demonstrator yang menunjukkan ke penonton?
     Bukan pencerita? Bukan pengamat dari luar?
 
-(c) Footage anchor audit:
+(d) Footage anchor audit:
     Apakah setiap kalimat narasi punya sesuatu yang nyata yang bisa ditunjuk di frame?
     Kalimat yang tidak punya anchor visual → ubah atau hilangkan.
 
-(d) Spoken markers audit:
+(e) Spoken markers audit:
     Apakah spoken markers natural ("guys", "nah", "nih", "ya udah", "gimana?")
     dipertahankan dan tidak dihapus?
 
-(e) Setup audit:
+(f) Setup audit:
     Apakah semua footage instruction bisa dieksekusi dengan constraint yang tersedia?
     Tidak ada elemen yang tidak ada di setup?
 
-(f) Durasi audit:
+(g) Durasi audit:
     Apakah word count sesuai target untuk metode dubbing yang dipilih?
 
 JIKA GAGAL SALAH SATU: rewrite sampai lolos sebelum output final.
 
-── 16. HIERARKI KONFLIK ─────────────────────────────
+── 17. HIERARKI KONFLIK ─────────────────────────────
 
 Jika ada konflik antar prinsip, gunakan urutan berikut:
 
@@ -468,7 +495,6 @@ KEMBALIKAN HANYA JSON MURNI — STRUKTUR PERSIS BERIKUT
   ]
 }
 
-PASTIKAN JUMLAH ELEMEN PADA ARRAY "scripts" PERSIS SEBANYAK ${jumlahScript}.
 Seluruh teks dalam Bahasa Indonesia natural. Tanpa emoji.
 `.trim();
 }
