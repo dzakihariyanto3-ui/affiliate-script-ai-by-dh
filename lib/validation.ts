@@ -1,6 +1,7 @@
 import {
   GeneratedResult,
   ProductAnalysis,
+  ProductSpecItem,
   Script,
   SetupShooting,
 } from "./types";
@@ -28,6 +29,35 @@ function toStringArraySafe(value: unknown, defaultArray: string[] = []): string[
     return parts.length > 0 ? parts : [value.trim()];
   }
   return defaultArray;
+}
+
+function toProductSpecArraySafe(value: unknown): ProductSpecItem[] {
+  if (Array.isArray(value)) {
+    const list: ProductSpecItem[] = [];
+    for (const item of value) {
+      if (item && typeof item === "object") {
+        const teknis = toStringSafe((item as any).teknis, "Tidak terlihat jelas di foto");
+        const awam = toStringSafe((item as any).awam, "Spesifikasi produk");
+        if (teknis || awam) {
+          list.push({ teknis, awam });
+        }
+      } else if (typeof item === "string" && item.trim().length > 0) {
+        list.push({
+          teknis: item.trim(),
+          awam: item.trim(),
+        });
+      }
+    }
+    if (list.length > 0) return list;
+  } else if (typeof value === "string" && value.trim().length > 0) {
+    return [{ teknis: value.trim(), awam: value.trim() }];
+  }
+  return [
+    {
+      teknis: "Tidak terlihat jelas di foto",
+      awam: "Spesifikasi sesuai tampilan foto produk.",
+    },
+  ];
 }
 
 /**
@@ -64,9 +94,8 @@ export function validateProductAnalysis(data: any): {
   const fitur = toStringArraySafe(fl.fitur || fl.fitur_utama || fl.features, [
     "Fitur sesuai tampilan foto produk.",
   ]);
-  const spesifikasi = toStringArraySafe(
-    fl.spesifikasi || fl.spesifikasi_produk || fl.specs,
-    ["Spesifikasi sesuai tampilan foto produk."]
+  const spesifikasi = toProductSpecArraySafe(
+    fl.spesifikasi || fl.spesifikasi_produk || fl.specs
   );
   const caraPenggunaan = toStringArraySafe(
     fl.caraPenggunaan || fl.cara_penggunaan || fl.cara_pakai || fl.caraPakai,

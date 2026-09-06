@@ -1,10 +1,15 @@
 export type ApiStatus = "idle" | "checking" | "connected" | "error";
 
+export interface ProductSpecItem {
+  teknis: string;
+  awam: string;
+}
+
 export interface ProductAnalysis {
   faktaLangsung: {
     produk: string;
     fitur: string[];
-    spesifikasi: string[];
+    spesifikasi: ProductSpecItem[];
     caraPenggunaan: string[];
     informasiPenting: string;
     hargaPromo: string;

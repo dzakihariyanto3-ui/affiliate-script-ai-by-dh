@@ -54,7 +54,12 @@ KEMBALIKAN HANYA JSON MURNI — STRUKTUR PERSIS BERIKUT
   "faktaLangsung": {
     "produk": "Nama produk yang terlihat di kemasan atau label",
     "fitur": ["Fitur 1 yang terbaca atau terlihat jelas di foto", "Fitur 2"],
-    "spesifikasi": ["Spesifikasi 1 yang terbaca — atau 'Tidak terlihat jelas di foto'", "Spesifikasi 2"],
+    "spesifikasi": [
+      {
+        "teknis": "Angka/kode spesifikasi asli yang terbaca di foto — atau 'Tidak terlihat jelas di foto'",
+        "awam": "Terjemahan dampak nyata spesifikasi ini dalam bahasa sehari-hari yang langsung dimengerti orang awam"
+      }
+    ],
     "caraPenggunaan": ["Langkah 1 yang tertulis atau tergambar di kemasan", "Langkah 2"],
     "informasiPenting": "Peringatan, catatan keselamatan, atau sertifikasi yang tertera — atau 'Tidak ada catatan khusus'",
     "hargaPromo": "Harga atau promo jika tertulis di foto — atau 'Tidak tercantum di foto'"
@@ -162,7 +167,10 @@ LEVEL 1 — FAKTA LANGSUNG
 
 - Produk: "${fl.produk}"
 - Fitur: ${JSON.stringify(fl.fitur)}
-- Spesifikasi: ${JSON.stringify(fl.spesifikasi)}
+- Spesifikasi:
+  Gunakan HANYA versi "awam" dari setiap spesifikasi dalam narasi.
+  Versi "teknis" (angka asli) tidak boleh disebutkan di narasi kecuali angkanya sudah bermakna langsung bagi orang awam (contoh: harga, ukuran fisik, jumlah item).
+  ${JSON.stringify(fl.spesifikasi, null, 2)}
 - Cara Penggunaan: ${JSON.stringify(fl.caraPenggunaan)}
 - Informasi Penting: "${fl.informasiPenting}"
 - Harga/Promo: "${fl.hargaPromo}"
@@ -261,6 +269,18 @@ APA YANG CREATOR MAU KATAKAN → CARI FOOTAGE YANG COCOK
 
 Minimal 1 footage instruction per script harus secara jelas memperlihatkan core selling idea.
 
+PENANDA FOOTAGE DI NARASI (WAJIB):
+Tambahkan penanda [1] [2] [3] [4] langsung di dalam teks narasi pada titik di mana footage tersebut mulai berjalan.
+Penanda ini membantu creator tahu bagian narasi mana yang diucapkan saat footage mana sedang direkam.
+
+Contoh format narasi dengan penanda:
+"[1] Nah ini jet cleaner dari DECKER yang udah cordless guys, gak perlu kabel sama sekali. [2] Tinggal masukin selangnya ke ember air kayak gini, [3] terus pasang baterainya — sekali ngecas bisa buat beberapa kali cuci motor. [4] Lihat nih semprotannya kenceng banget, kotoran di ban langsung rontok. Cek di keranjang kuning kalau kalian butuh."
+
+Aturan penanda:
+- Jumlah penanda harus sama persis dengan jumlah footage instruction
+- Penanda diletakkan tepat sebelum kalimat yang diucapkan saat footage itu berjalan
+- Narasi harus tetap mengalir natural meski ada penanda
+
 ── 4. SPOKEN MARKERS — WAJIB DIPERTAHANKAN ───────────
 
 Spoken markers adalah bagian dari ritme lisan Indonesia asli.
@@ -293,25 +313,70 @@ DILARANG pola robotic:
 YANG DIINGINKAN:
 "Tinggal direbus sebentar, terus ditiriskan dan dicampur sama bumbunya."
 
-── 6. HOOK — SPESIFIK DAN KONTEKSTUAL ────────────────
+── 6. HOOK — 5 TIPE PSIKOLOGIS, PILIH YANG PALING COCOK ─
 
-Hook yang bekerja bukan soal menghindari kata tertentu —
-tapi soal seberapa spesifik dan relevan hook itu untuk situasi audiens yang tepat.
+Hook bukan soal formula. Hook adalah momen pertama yang membuat penonton memutuskan untuk tidak scroll.
 
-Hook yang baik:
-- Langsung menyebut konteks situasi atau kondisi spesifik siapa yang butuh
-- Cukup spesifik sehingga tidak bisa ditempel ke produk lain tanpa mengubah kata
-- Terasa seperti awal percakapan, bukan pembukaan iklan
+Yang membuat hook bekerja adalah ia menyentuh satu dari lima mekanisme psikologis berikut.
+Pilih tipe yang paling cocok dengan produk dan angle script tersebut.
+Jangan gunakan tipe yang sama untuk dua script sekaligus dalam satu batch.
 
-Hook yang buruk:
-- Generik — bisa dipakai untuk produk apa saja word-for-word
-- Clickbait — janjinya lebih besar dari isi script
-- Obvious template: "rahasia...", "jangan skip...", "wajib tahu..."
-  (bukan karena kata-katanya terlarang, tapi karena terasa formula yang sudah terlalu sering didengar)
+TIPE 1 — OBSERVASI MENGEJUTKAN
+Membuka dengan fakta atau kenyataan yang tidak terduga. Bikin penonton berpikir "hah, masa sih?"
+Contoh: "Ternyata bukan cuma mobil tua, mobil baru juga banyak yang kancing bempernya hilang guys."
+Cocok untuk: produk yang menyelesaikan masalah yang sering diabaikan atau tidak disadari.
 
-Uji hook sebelum digunakan:
-"Apakah hook ini bisa ditempel ke produk berbeda tanpa mengubah kata?"
-Kalau ya — hook terlalu generik, ganti.
+TIPE 2 — SITUASI RELATABLE YANG SPESIFIK
+Menggambarkan situasi konkret yang langsung dikenali penonton dari kehidupan nyata.
+Contoh: "Pas mau cuci motor, selangnya nggak nyampe ke kolong — pasti pada ngalamin ini kan."
+Cocok untuk: masalah sehari-hari yang sering terjadi tapi jarang dibahas.
+
+TIPE 3 — KONTRAS YANG MENGEJUTKAN
+Membandingkan dua hal yang tidak terduga untuk menciptakan rasa penasaran.
+Contoh: "Alat sekecil ini ternyata bisa ngalahin selang air yang panjangnya dua meter."
+Cocok untuk: produk yang ukurannya kecil tapi kemampuannya besar, atau harganya murah tapi kualitasnya bagus.
+
+TIPE 4 — DISCOVERY FRAMING
+Creator berperan sebagai orang yang baru menemukan sesuatu dan mau langsung cerita.
+Contoh: "Baru nemu nih guys, ternyata gak perlu keluar duit gede buat cuci motor bersih di rumah."
+Cocok untuk: produk yang menawarkan alternatif lebih murah atau lebih praktis dari cara lama.
+
+TIPE 5 — MASALAH YANG LANGSUNG DITUNJUK
+Membuka langsung ke masalah tanpa basa-basi, tidak butuh pengantar.
+Contoh: "Aki motor soak lagi, bengkel tutup — ini solusinya guys."
+Cocok untuk: produk yang menyelesaikan satu masalah sangat spesifik dengan cara yang langsung.
+
+ATURAN WAJIB:
+- Satu batch script tidak boleh menggunakan tipe yang sama lebih dari sekali
+- Hook harus spesifik — tidak bisa ditempel ke produk lain tanpa mengubah kata
+- Hook bukan pertanyaan retoris dan bukan clickbait
+- Panjang hook maksimal 2 kalimat pendek
+
+REFERENSI HOOK YANG SUDAH DIKURASI (Gunakan sebagai inspirasi gaya, bukan disalin):
+
+Tipe 1 — Observasi Mengejutkan:
+- "Ternyata bukan cuma motor tua, motor baru juga banyak yang akinya cepet tekor guys."
+- "Gak nyangka satu alat ini bisa gantiin tiga peralatan masak yang biasa ada di dapur."
+- "Ternyata noda hitam di sela keramik itu bukan sekadar kotoran biasa, dan ini cara benernya bersihinnya guys."
+- "Gak nyangka ada alat harga segini tapi hasilnya bisa nyaingin yang ratusan ribu guys."
+
+Tipe 3 — Kontras yang Mengejutkan:
+- "Alat sekecil ini ternyata tekanannya bisa ngalahin selang air biasa yang panjangnya dua meter."
+- "Harga segini tapi materialnya udah stainless steel, gak nyangka ada yang jual di harga segitu guys."
+- "Kemasannya muat di kantong tapi isinya bisa buat seminggu lebih, ini serius guys."
+- "Seringkas ini tapi kapasitas baterainya bisa buat beberapa kali pemakaian penuh guys."
+
+Tipe 4 — Discovery Framing:
+- "Baru nemu nih guys, ternyata gak perlu modal gede buat bisa cuci kendaraan sendiri di rumah."
+- "Baru tau ternyata ada yang jual alat kayak gini di harga segitu, selama ini belinya di toko offline kemahalan."
+- "Gak sengaja nemu produk ini dan sekarang jadi yang paling sering dipake di rumah."
+- "Baru nemu alat ini waktu lagi browsing, ternyata ini yang lagi banyak dicari-cari guys."
+- "Baru cobain tadi dan hasilnya bagus banget, gak nyangka secepet itu guys."
+
+Tipe 5 — Masalah yang Langsung Ditunjuk:
+- "Aki motor soak lagi padahal bengkel tutup, ternyata ada alat yang bisa dipake sendiri di rumah guys."
+- "Kancing bemper copot lagi padahal baru dipasang minggu lalu, ini solusi permanennya."
+- "Baju udah dicuci tapi masih bau apek — biasanya ini penyebabnya guys."
 
 ── 7. FEATURE → FUNCTION → BENEFIT ──────────────────
 
@@ -399,21 +464,52 @@ Estimasi word count berdasarkan metode dubbing:
 
 Jika pesan sudah lengkap sebelum batas minimum, jangan tambahkan kata kosong.
 
-── 14. CTA — SOFT DAN NATURAL ───────────────────────
+── 14. CTA — LANGSUNG, SPESIFIK, TANPA BASA-BASI ────
 
-CTA harus terasa seperti saran jujur dari seseorang yang genuinely merekomendasikan —
-bukan penutup iklan yang sudah bisa ditebak.
+CTA bukan ajakan yang sopan. CTA adalah informasi pembelian yang langsung dan konkret.
 
-Gaya yang diinginkan: sedikit tidak pasti, tidak memaksa, tidak terlalu rapi.
+Formula CTA yang benar:
+[Jumlah / paket yang didapat] + [harga] + [lokasi tombol beli]
 
-Contoh arah yang benar:
-"Cek aja dulu di keranjang."
-"Kayaknya lagi ada promo deh."
-"Kalau tertarik bisa langsung dicek."
-"Ada di keranjang kalau mau."
+Dua gaya ending yang diizinkan:
+- Gaya A — Langsung bersih: "[info], [harga] di keranjang kuning."
+- Gaya B — Soft invite: "[info], buat yang mau langsung cek di keranjang kuning."
 
-Hindari CTA yang terasa seperti template iklan atau terlalu formal.
-CTA tidak boleh membuat klaim baru atau janji yang tidak disebutkan dalam narasi.
+Yang TIDAK boleh ada di CTA:
+- "Kalau tertarik bisa dicek ya" → terlalu ragu-ragu
+- "Mending kalian amankan sekarang" → terasa memaksa
+- "Ada di keranjang kuning ya" → "ya" di akhir terasa kaku
+- Klaim baru atau janji yang tidak disebut di narasi
+
+Jika harga tidak tersedia di evidence:
+Cukup sebut lokasi tombol beli: "Di keranjang kuning."
+
+REFERENSI CTA YANG SUDAH DIKURASI (Gunakan sebagai inspirasi gaya, bukan disalin):
+- "Satu paket lengkap harga cuma 30 ribuan, di keranjang kiri bawah."
+- "Harga 114 ribuan udah dapet unit sama aksesorisnya, di keranjang kuning."
+- "Satu set isi 100 piece cuma 30 ribuan guys, buat yang mau langsung cek di keranjang kuning."
+- "89 ribuan udah dapet semuanya, buat yang mau langsung order di keranjang kuning."
+- "Cuma 45 ribuan satu paket, langsung aja ke keranjang kuning."
+- "Isi 5 bungkus harga 25 ribuan, di keranjang kuning."
+- "Udah termasuk charger sama baterainya, 114 ribu di keranjang kuning."
+- "Paket lengkapnya 99 ribuan, buat yang mau langsung cek di keranjang kuning."
+- "Dapet unit plus nozzle set, total 114 ribuan di keranjang kuning."
+- "Harga normalnya dua kali lipat, di sini cuma 114 ribuan di keranjang kuning."
+- "Satu pcs 15 ribuan aja, di keranjang kiri bawah."
+- "Satu set 100 piece cuma 30 ribuan, buat yang tertarik langsung cek di keranjang kiri."
+- "Udah ada garansinya juga, 250 ribuan di keranjang kuning."
+- "Harga 75 ribuan dapet dua ukuran sekaligus, di keranjang kuning."
+- "Satu pack isi 10 lembar 20 ribuan, di keranjang kiri."
+- "Lengkap sama manualnya, 189 ribuan di keranjang kuning."
+- "Per unit 8 ribuan, kalau beli 5 jadi 35 ribuan di keranjang kuning."
+- "Satu set komplit 149 ribuan guys, di keranjang kiri."
+- "Dapet 3 variasi ukuran sekaligus, 45 ribuan di keranjang kuning."
+- "Isi 50 pcs cuma 25 ribuan, buat yang mau langsung cek di keranjang."
+- "Harganya cuma 89 ribuan, di keranjang kuning."
+- "Udah termasuk baterainya, total 114 ribuan di keranjang kuning."
+- "Satu paket 30 ribuan isi lengkap, di keranjang kiri bawah."
+- "114 ribuan dapet semuanya, buat yang mau langsung cek di keranjang kuning."
+- "Satu box isi 12 harga 67 ribuan, di keranjang kiri."
 
 ── 15. CAPTION & HASHTAG ────────────────────────────
 
@@ -424,7 +520,7 @@ Hashtag: tepat 5 hashtag relevan, diawali tanda pagar (#).
 
 Jalankan rantai audit ini sebelum setiap script difinalisasi:
 
-DRAFT → CEK KLAIM → CEK SPEC → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOKEN MARKERS → CEK SETUP → CEK DURASI → FINAL
+DRAFT → CEK KLAIM → CEK SPEC → CEK MARKER → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOKEN MARKERS → CEK SETUP → CEK DURASI → FINAL
 
 (a) Claim audit:
     Apakah semua klaim bisa ditelusuri ke Level 1 atau Level 2?
@@ -433,24 +529,29 @@ DRAFT → CEK KLAIM → CEK SPEC → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOK
 (b) Spec audit:
     Apakah ada angka teknis yang disebut langsung tanpa diterjemahkan ke dampak nyata?
     (mAh, PA, Watt, liter/menit, kode baterai, dll) → wajib diterjemahkan atau dihapus.
+    Gunakan versi "awam" dari spesifikasi, bukan versi "teknis".
 
-(c) POV audit:
+(c) Footage marker audit:
+    Apakah penanda [1][2][3][4] sudah ada di narasi pada posisi yang tepat?
+    Apakah jumlah penanda sama persis dengan jumlah footage instruction?
+
+(d) POV audit:
     Apakah creator berperan sebagai demonstrator yang menunjukkan ke penonton?
     Bukan pencerita? Bukan pengamat dari luar?
 
-(d) Footage anchor audit:
+(e) Footage anchor audit:
     Apakah setiap kalimat narasi punya sesuatu yang nyata yang bisa ditunjuk di frame?
     Kalimat yang tidak punya anchor visual → ubah atau hilangkan.
 
-(e) Spoken markers audit:
+(f) Spoken markers audit:
     Apakah spoken markers natural ("guys", "nah", "nih", "ya udah", "gimana?")
     dipertahankan dan tidak dihapus?
 
-(f) Setup audit:
+(g) Setup audit:
     Apakah semua footage instruction bisa dieksekusi dengan constraint yang tersedia?
     Tidak ada elemen yang tidak ada di setup?
 
-(g) Durasi audit:
+(h) Durasi audit:
     Apakah word count sesuai target untuk metode dubbing yang dipilih?
 
 JIKA GAGAL SALAH SATU: rewrite sampai lolos sebelum output final.
@@ -481,7 +582,7 @@ KEMBALIKAN HANYA JSON MURNI — STRUKTUR PERSIS BERIKUT
       "masalahUtama": "Masalah spesifik yang diangkat dalam script ini",
       "benefitUtama": "Benefit utama yang difokuskan dalam script ini",
       "hook": "Kalimat pembuka 3 detik pertama",
-      "narasi": "Naskah lengkap — termasuk CTA yang embedded secara natural di akhir",
+      "narasi": "Naskah lengkap dengan penanda [1][2][3][4] di posisi yang tepat sesuai footage — termasuk CTA yang embedded secara natural di akhir",
       "footage": [
         "Instruksi visual adegan 1",
         "Instruksi visual adegan 2",

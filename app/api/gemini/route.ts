@@ -156,7 +156,11 @@ export async function POST(request: NextRequest) {
       // Inject analisisProduk dan setupShooting dari input yang sudah di-lock
       // (AI tidak lagi mengembalikan keduanya dalam schema baru)
       const dataToValidate = {
-        ...(typeof rawData === "object" ? rawData : {}),
+        ...(Array.isArray(rawData)
+          ? { scripts: rawData }
+          : typeof rawData === "object" && rawData !== null
+          ? rawData
+          : {}),
         analisisProduk: analysis,
         setupShooting: setup,
       };
