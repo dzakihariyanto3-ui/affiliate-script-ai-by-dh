@@ -18,6 +18,7 @@ interface CallGeminiJSONParams {
   prompt: string;
   images?: GeminiImagePart[];
   model?: string;
+  temperature?: number;
 }
 
 export const FALLBACK_GEMINI_MODELS = [
@@ -167,6 +168,7 @@ export async function callGeminiJSON({
   prompt,
   images = [],
   model: preferredModel,
+  temperature,
 }: CallGeminiJSONParams): Promise<any> {
   const cleanKey = apiKey ? apiKey.trim() : "";
   if (!cleanKey) {
@@ -207,7 +209,7 @@ export async function callGeminiJSON({
       const model = genAI.getGenerativeModel({
         model: modelName,
         generationConfig: {
-          temperature: GEMINI_TEMPERATURE,
+          temperature: typeof temperature === "number" ? temperature : GEMINI_TEMPERATURE,
           topP: GEMINI_TOP_P,
           maxOutputTokens: GEMINI_MAX_OUTPUT_TOKENS,
           responseMimeType: GEMINI_RESPONSE_MIME_TYPE,

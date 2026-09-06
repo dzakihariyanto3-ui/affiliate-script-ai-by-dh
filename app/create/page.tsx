@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useApp } from "@/lib/app-context";
@@ -42,6 +42,16 @@ export default function CreateProjectPage() {
   const [loadingMessage, setLoadingMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+    };
+  }, []);
 
   const photoCount = photos.filter((photo) => photo !== null).length;
 
@@ -120,8 +130,24 @@ export default function CreateProjectPage() {
     setStep("setup_locked");
   }
 
+  function handleCancelGenerate() {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsGenerating(false);
+    setErrorMessage("");
+  }
+
   async function handleGenerate() {
     if (!analysis || !setup) return;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     setIsGenerating(true);
     setErrorMessage("");
@@ -138,9 +164,18 @@ export default function CreateProjectPage() {
           dubbing,
           jumlahScript,
         }),
+        signal: controller.signal,
       });
 
+      if (controller.signal.aborted) {
+        return;
+      }
+
       const data = await response.json();
+
+      if (controller.signal.aborted) {
+        return;
+      }
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Terjadi kesalahan.");
@@ -154,14 +189,31 @@ export default function CreateProjectPage() {
         return;
       }
 
-      setProjectResult(validation.data);
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      setProjectResult({
+        ...validation.data,
+        dubbing,
+      });
       router.push("/result");
     } catch (error) {
+      if (
+        controller.signal.aborted ||
+        (error instanceof DOMException && error.name === "AbortError") ||
+        (error as Error)?.name === "AbortError"
+      ) {
+        return;
+      }
       setErrorMessage(
         error instanceof Error ? error.message : "Terjadi kesalahan."
       );
     } finally {
-      setIsGenerating(false);
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+        setIsGenerating(false);
+      }
     }
   }
 
@@ -256,7 +308,7 @@ export default function CreateProjectPage() {
       {isGenerating && (
         <GenerationProgress
           isGenerating={isGenerating}
-          onCancel={() => setIsGenerating(false)}
+          onCancel={handleCancelGenerate}
         />
       )}
 

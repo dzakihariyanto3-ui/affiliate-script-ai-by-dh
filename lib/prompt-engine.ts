@@ -313,11 +313,14 @@ DILARANG pola robotic:
 YANG DIINGINKAN:
 "Tinggal direbus sebentar, terus ditiriskan dan dicampur sama bumbunya."
 
-── 6. HOOK — 5 TIPE PSIKOLOGIS, PILIH YANG PALING COCOK ─
+── 6. HOOK — 4 TIPE PSIKOLOGIS, PILIH YANG PALING COCOK ─
 
 Hook bukan soal formula. Hook adalah momen pertama yang membuat penonton memutuskan untuk tidak scroll.
 
-Yang membuat hook bekerja adalah ia menyentuh satu dari lima mekanisme psikologis berikut.
+TIPE 2 (SITUASI RELATABLE) DILARANG DIGUNAKAN — dihapus dari pilihan.
+Hanya 4 tipe berikut yang tersedia:
+
+Yang membuat hook bekerja adalah ia menyentuh satu dari empat mekanisme psikologis berikut.
 Pilih tipe yang paling cocok dengan produk dan angle script tersebut.
 Jangan gunakan tipe yang sama untuk dua script sekaligus dalam satu batch.
 
@@ -325,11 +328,6 @@ TIPE 1 — OBSERVASI MENGEJUTKAN
 Membuka dengan fakta atau kenyataan yang tidak terduga. Bikin penonton berpikir "hah, masa sih?"
 Contoh: "Ternyata bukan cuma mobil tua, mobil baru juga banyak yang kancing bempernya hilang guys."
 Cocok untuk: produk yang menyelesaikan masalah yang sering diabaikan atau tidak disadari.
-
-TIPE 2 — SITUASI RELATABLE YANG SPESIFIK
-Menggambarkan situasi konkret yang langsung dikenali penonton dari kehidupan nyata.
-Contoh: "Pas mau cuci motor, selangnya nggak nyampe ke kolong — pasti pada ngalamin ini kan."
-Cocok untuk: masalah sehari-hari yang sering terjadi tapi jarang dibahas.
 
 TIPE 3 — KONTRAS YANG MENGEJUTKAN
 Membandingkan dua hal yang tidak terduga untuk menciptakan rasa penasaran.
@@ -385,12 +383,12 @@ Alur wajib: Fitur Nyata (Level 1) → Fungsi yang Terlihat → Manfaat Nyata bag
 Tunjukkan situasi konkret daripada menempelkan label kata sifat ("praktis", "bagus", "hemat").
 Kata sifat boleh digunakan jika situasi konkretnya sudah ditunjukkan terlebih dahulu.
 
-── 8. SPEC → DAMPAK NYATA (WAJIB) ──────────────────
+── 8. SPEC & JARGON → DAMPAK NYATA (WAJIB) ─────────
 
-Jangan sebut angka teknis yang tidak langsung bermakna bagi penonton awam.
-Selalu terjemahkan spesifikasi teknis ke dalam dampak nyata yang bisa dirasakan.
+Jangan sebut angka teknis ATAU jargon teknis yang tidak langsung bermakna bagi penonton awam.
+Selalu terjemahkan ke dalam dampak nyata yang bisa dirasakan.
 
-Penonton tidak tahu artinya "120000PA", "15000mAh", atau "700W".
+Penonton tidak tahu artinya "120000PA", "15000mAh", "700W", atau "motor brushless".
 Yang mereka butuhkan adalah: apa artinya itu buat saya dalam kehidupan nyata?
 
 Angka yang BOLEH disebut langsung karena sudah bermakna bagi awam:
@@ -398,15 +396,22 @@ Angka yang BOLEH disebut langsung karena sudah bermakna bagi awam:
 - Ukuran fisik yang bisa dibayangkan: "pipa 7 meter"
 - Jumlah item: "isi 5 bungkus"
 
-Angka teknis yang WAJIB diterjemahkan terlebih dahulu:
+Angka teknis yang WAJIB diterjemahkan:
 - Kapasitas baterai: JANGAN "15000mAh" → GANTI: "baterinya cukup buat beberapa kali cuci motor"
 - Tekanan: JANGAN "120000PA" → GANTI: "tekanannya kenceng, tanah di kolong motor bisa langsung rontok"
 - Daya motor: JANGAN "700W" → GANTI: jelaskan dampaknya, atau skip jika tidak ada cara menjelaskan
 - Flow rate: JANGAN "2,4 liter per menit" → GANTI: "alirannya lumayan deras" atau skip
 - Kode baterai: JANGAN "998VF" → GANTI: jelaskan apa yang bisa dilakukan dengan baterai itu
 
-Rumus wajib: SPEC → APA ARTINYA → APA YANG BISA DIRASAKAN PENONTON
-Bukan: SPEC → langsung disebut ke penonton
+Jargon teknis yang WAJIB diterjemahkan (bukan hanya angka):
+- JANGAN "motor brushless" → GANTI: "mesinnya stabil dipakai lama, gak gampang panas"
+- JANGAN "inverter" → GANTI: jelaskan dampaknya ke pengguna
+- JANGAN "dual core" → GANTI: jelaskan apa yang bisa dilakukan lebih cepat atau lebih baik
+- JANGAN "aluminum alloy" → GANTI: "materialnya logam jadi lebih kuat dan tahan lama"
+- PRINSIP: jika penonton awam perlu googling untuk mengerti kata itu → wajib diterjemahkan
+
+Rumus wajib: SPEC/JARGON → APA ARTINYA → APA YANG BISA DIRASAKAN PENONTON
+Bukan: SPEC/JARGON → langsung disebut ke penonton
 
 ── 9. CORE SELLING IDEA — 1 IDE PER SCRIPT ──────────
 
@@ -478,8 +483,10 @@ Dua gaya ending yang diizinkan:
 Yang TIDAK boleh ada di CTA:
 - "Kalau tertarik bisa dicek ya" → terlalu ragu-ragu
 - "Mending kalian amankan sekarang" → terasa memaksa
-- "Ada di keranjang kuning ya" → "ya" di akhir terasa kaku
-- Klaim baru atau janji yang tidak disebut di narasi
+- Kata "ya" di akhir kalimat CTA apapun → DILARANG KERAS
+- Klaim promo, diskon, atau penghematan yang tidak ada di Level 1 evidence
+  Contoh yang DILARANG: "diskon 50 persen", "harga coret", "hemat sekian persen"
+  → Jika tidak ada bukti diskon di foto/data produk, jangan sebut diskon apapun
 
 Jika harga tidak tersedia di evidence:
 Cukup sebut lokasi tombol beli: "Di keranjang kuning."
@@ -597,5 +604,269 @@ KEMBALIKAN HANYA JSON MURNI — STRUKTUR PERSIS BERIKUT
 }
 
 Seluruh teks dalam Bahasa Indonesia natural. Tanpa emoji.
+`.trim();
+}
+
+export function buildRegenerateHookPrompt(input: {
+  analysis: ProductAnalysis;
+  setup: SetupShooting;
+  narasi: string;
+  cta: string;
+  angle: string;
+  previousHook?: string;
+}): string {
+  const { analysis, setup, narasi, cta, angle, previousHook } = input;
+  const fl = analysis.faktaLangsung;
+  const ia = analysis.inferensiAman;
+  const is_ = analysis.interpretasiStrategis;
+
+  const avoidInstruction = previousHook
+    ? `
+Output sebelumnya yang HARUS DIHINDARI:
+"${previousHook}"
+Hasilkan hook yang berbeda — gunakan tipe hook yang berbeda,
+sudut pandang yang berbeda, atau struktur kalimat yang tidak mengulang di atas.
+`
+    : "";
+
+  return `
+Kamu adalah scriptwriter TikTok affiliate Indonesia.
+
+Berikut script yang sudah ada:
+- Narasi: ${JSON.stringify(narasi)}
+- CTA: ${JSON.stringify(cta)}
+- Angle: ${JSON.stringify(angle)}
+
+${avoidInstruction}
+
+Berikut data produk dan setup shooting:
+═══════════════════════════════════════════════════════
+DATA PRODUK — TIGA LEVEL EPISTEMIC
+═══════════════════════════════════════════════════════
+
+LEVEL 1 — FAKTA LANGSUNG:
+- Produk: "${fl.produk}"
+- Fitur: ${JSON.stringify(fl.fitur)}
+- Spesifikasi: ${JSON.stringify(fl.spesifikasi, null, 2)}
+- Cara Penggunaan: ${JSON.stringify(fl.caraPenggunaan)}
+- Informasi Penting: "${fl.informasiPenting}"
+- Harga/Promo: "${fl.hargaPromo}"
+
+LEVEL 2 — INFERENSI AMAN:
+- Kategori Produk: "${ia.kategoriProduk}"
+- Fungsi Utama: "${ia.fungsiUtama}"
+
+LEVEL 3 — INTERPRETASI STRATEGIS:
+- Target Pengguna: "${is_.targetPengguna}"
+- Masalah yang Diselesaikan: "${is_.masalahYangDiselesaikan}"
+- Manfaat: ${JSON.stringify(is_.manfaat)}
+- Keunggulan: ${JSON.stringify(is_.keunggulan)}
+
+═══════════════════════════════════════════════════════
+SETUP SHOOTING TERKUNCI (IMMUTABLE)
+═══════════════════════════════════════════════════════
+${JSON.stringify(setup, null, 2)}
+
+TUGAS: Hasilkan HANYA hook baru (kalimat pembuka 0-3 detik) yang:
+1. Nyambung dan konsisten dengan narasi dan CTA di atas
+2. Mengikuti salah satu dari 4 tipe hook yang tersedia (Tipe 1, 3, 4, atau 5)
+3. Tidak mengulang tipe hook yang sudah dipakai di script lain dalam batch ini
+4. Mengikuti semua prinsip dari buildGeneratePrompt
+
+── 6. HOOK — 4 TIPE PSIKOLOGIS, PILIH YANG PALING COCOK ─
+Hook bukan soal formula. Hook adalah momen pertama yang membuat penonton memutuskan untuk tidak scroll.
+
+TIPE 2 (SITUASI RELATABLE) DILARANG DIGUNAKAN — dihapus dari pilihan.
+Hanya 4 tipe berikut yang tersedia:
+
+TIPE 1 — OBSERVASI MENGEJUTKAN
+Membuka dengan fakta atau kenyataan yang tidak terduga. Bikin penonton berpikir "hah, masa sih?"
+Contoh: "Ternyata bukan cuma mobil tua, mobil baru juga banyak yang kancing bempernya hilang guys."
+Cocok untuk: produk yang menyelesaikan masalah yang sering diabaikan atau tidak disadari.
+
+TIPE 3 — KONTRAS YANG MENGEJUTKAN
+Membandingkan dua hal yang tidak terduga untuk menciptakan rasa penasaran.
+Contoh: "Alat sekecil ini ternyata bisa ngalahin selang air yang panjangnya dua meter."
+Cocok untuk: produk yang ukurannya kecil tapi kemampuannya besar, atau harganya murah tapi kualitasnya bagus.
+
+TIPE 4 — DISCOVERY FRAMING
+Creator berperan sebagai orang yang baru menemukan sesuatu dan mau langsung cerita.
+Contoh: "Baru nemu nih guys, ternyata gak perlu keluar duit gede buat cuci motor bersih di rumah."
+Cocok untuk: produk yang menawarkan alternatif lebih murah atau lebih praktis dari cara lama.
+
+TIPE 5 — MASALAH YANG LANGSUNG DITUNJUK
+Membuka langsung ke masalah tanpa basa-basi, tidak butuh pengantar.
+Contoh: "Aki motor soak lagi, bengkel tutup — ini solusinya guys."
+Cocok untuk: produk yang menyelesaikan satu masalah sangat spesifik dengan cara yang langsung.
+
+ATURAN WAJIB:
+- Hook harus spesifik — tidak bisa ditempel ke produk lain tanpa mengubah kata
+- Hook bukan pertanyaan retoris dan bukan clickbait
+- Panjang hook maksimal 2 kalimat pendek
+- Gunakan demonstrator POV ("guys", "kalian", dsb.)
+- Seluruh klaim dapat ditelusuri ke Level 1 / Level 2 evidence
+
+KEMBALIKAN HANYA JSON:
+{ "hook": "..." }
+`.trim();
+}
+
+export function buildRegenerateNarasiPrompt(input: {
+  analysis: ProductAnalysis;
+  setup: SetupShooting;
+  hook: string;
+  cta: string;
+  angle: string;
+  dubbing: "Suara sendiri" | "Suara AI";
+  previousNarasi?: string;
+}): string {
+  const { analysis, setup, hook, cta, angle, dubbing, previousNarasi } = input;
+  const fl = analysis.faktaLangsung;
+  const ia = analysis.inferensiAman;
+  const is_ = analysis.interpretasiStrategis;
+
+  const avoidInstruction = previousNarasi
+    ? `
+Output sebelumnya yang HARUS DIHINDARI:
+"${previousNarasi}"
+Hasilkan narasi yang berbeda — variasikan urutan demonstrasi,
+cara menjelaskan fitur, atau momen yang difokuskan.
+Jangan mengulang struktur kalimat dari narasi di atas.
+`
+    : "";
+
+  return `
+Kamu adalah scriptwriter TikTok affiliate Indonesia.
+
+Berikut elemen script yang sudah ada dan TIDAK BOLEH DIUBAH:
+- Hook: ${JSON.stringify(hook)}
+- CTA: ${JSON.stringify(cta)}
+- Angle: ${JSON.stringify(angle)}
+
+${avoidInstruction}
+
+Berikut data produk dan setup shooting:
+═══════════════════════════════════════════════════════
+DATA PRODUK — TIGA LEVEL EPISTEMIC
+═══════════════════════════════════════════════════════
+
+LEVEL 1 — FAKTA LANGSUNG:
+- Produk: "${fl.produk}"
+- Fitur: ${JSON.stringify(fl.fitur)}
+- Spesifikasi:
+  Gunakan HANYA versi "awam" dari setiap spesifikasi dalam narasi.
+  ${JSON.stringify(fl.spesifikasi, null, 2)}
+- Cara Penggunaan: ${JSON.stringify(fl.caraPenggunaan)}
+- Informasi Penting: "${fl.informasiPenting}"
+- Harga/Promo: "${fl.hargaPromo}"
+
+LEVEL 2 — INFERENSI AMAN:
+- Kategori Produk: "${ia.kategoriProduk}"
+- Fungsi Utama: "${ia.fungsiUtama}"
+
+LEVEL 3 — INTERPRETASI STRATEGIS:
+- Target Pengguna: "${is_.targetPengguna}"
+- Masalah yang Diselesaikan: "${is_.masalahYangDiselesaikan}"
+- Manfaat: ${JSON.stringify(is_.manfaat)}
+- Keunggulan: ${JSON.stringify(is_.keunggulan)}
+
+═══════════════════════════════════════════════════════
+SETUP SHOOTING TERKUNCI (IMMUTABLE)
+═══════════════════════════════════════════════════════
+${JSON.stringify(setup, null, 2)}
+
+Metode dubbing: ${dubbing}
+
+TUGAS: Hasilkan HANYA narasi baru dengan ketentuan:
+1. Dimulai dari hook yang ada sebagai penanda [1]
+2. Berakhir mengarah secara natural ke CTA yang ada
+3. Menggunakan penanda [1][2][3][4] sesuai footage
+4. Mengikuti semua prinsip dari buildGeneratePrompt
+
+── PRINSIP NARASI WAJIB ──
+- CLAIM TRANSFORMATION RULE: Semua klaim dapat ditelusuri ke Level 1 atau Level 2.
+- DEMONSTRATOR POV: Creator adalah seseorang yang menunjukkan ke kamera ("kalian", "guys"). Setiap kalimat punya anchor visual nyata di frame.
+- FOOTAGE ANCHOR: Narasi adalah penjelasan lisan dari footage yang terlihat di kamera.
+- PENANDA FOOTAGE DI NARASI: Tambahkan penanda [1] [2] [3] [4] di teks narasi tepat sebelum kalimat footage itu diucapkan. Bagian [1] diawali dengan hook yang sudah ada.
+- SPOKEN MARKERS & SPOKEN FLOW: Pertahankan "nah", "terus", "nih", "kan", dsb. Kalimat mengalir alami.
+- SPEC & JARGON → DAMPAK NYATA: Terjemahkan seluruh spesifikasi teknis dan jargon (motor brushless, inverter, dual core, dsb.) ke dalam bahasa awam.
+- DURASI & WORD COUNT:
+  - Suara sendiri tempo cepat : 110–135 kata untuk 37–45 detik
+  - Suara sendiri tempo normal: 80–110 kata untuk 37–45 detik
+  - Suara AI                  : 70–90 kata untuk 37–45 detik
+
+KEMBALIKAN HANYA JSON:
+{
+  "narasi": "...",
+  "footage": [
+    "Instruksi visual adegan 1",
+    "Instruksi visual adegan 2",
+    "Instruksi visual adegan 3",
+    "Instruksi visual adegan 4"
+  ]
+}
+`.trim();
+}
+
+export function buildRegenerateCtaPrompt(input: {
+  analysis: ProductAnalysis;
+  setup?: SetupShooting;
+  hook: string;
+  narasi: string;
+  angle: string;
+  previousCta?: string;
+}): string {
+  const { analysis, hook, narasi, angle, previousCta } = input;
+  const fl = analysis.faktaLangsung;
+
+  const avoidInstruction = previousCta
+    ? `
+Output sebelumnya yang HARUS DIHINDARI:
+"${previousCta}"
+Hasilkan CTA yang berbeda — gunakan gaya Gaya A jika sebelumnya Gaya B,
+atau variasikan struktur kalimatnya.
+`
+    : "";
+
+  return `
+Kamu adalah scriptwriter TikTok affiliate Indonesia.
+
+Berikut elemen script yang sudah ada dan TIDAK BOLEH DIUBAH:
+- Hook: ${JSON.stringify(hook)}
+- Narasi: ${JSON.stringify(narasi)}
+- Angle: ${JSON.stringify(angle)}
+
+${avoidInstruction}
+
+Berikut data produk:
+- Produk: "${fl.produk}"
+- Harga/Promo: "${fl.hargaPromo}"
+- Fitur: ${JSON.stringify(fl.fitur)}
+
+TUGAS: Hasilkan HANYA CTA baru yang:
+1. Menutup narasi di atas secara natural
+2. Mengikuti formula CTA: [jumlah/paket] + [harga] + [lokasi tombol]
+3. Dua gaya ending yang diizinkan:
+   - Gaya A — Langsung bersih: "[info], [harga] di keranjang kuning."
+   - Gaya B — Soft invite: "[info], buat yang mau langsung cek di keranjang kuning."
+4. DILARANG KERAS:
+   - Kata "ya" di akhir kalimat CTA apapun
+   - "Kalau tertarik bisa dicek ya" (terlalu ragu-ragu)
+   - "Mending kalian amankan sekarang" (memaksa)
+   - Menambahkan klaim promo atau diskon yang tidak ada di evidence (diskon 50%, harga coret, dsb.)
+   - Jika harga tidak tersedia di evidence, cukup sebut lokasi tombol beli: "Di keranjang kuning."
+
+REFERENSI CTA YANG SUDAH DIKURASI:
+- "Satu paket lengkap harga cuma 30 ribuan, di keranjang kiri bawah."
+- "Harga 114 ribuan udah dapet unit sama aksesorisnya, di keranjang kuning."
+- "Satu set isi 100 piece cuma 30 ribuan guys, buat yang mau langsung cek di keranjang kuning."
+- "89 ribuan udah dapet semuanya, buat yang mau langsung order di keranjang kuning."
+- "Cuma 45 ribuan satu paket, langsung aja ke keranjang kuning."
+- "Isi 5 bungkus harga 25 ribuan, di keranjang kuning."
+- "Udah termasuk charger sama baterainya, 114 ribu di keranjang kuning."
+- "Paket lengkapnya 99 ribuan, buat yang mau langsung cek di keranjang kuning."
+
+KEMBALIKAN HANYA JSON:
+{ "cta": "..." }
 `.trim();
 }

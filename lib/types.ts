@@ -59,4 +59,5 @@ export interface GeneratedResult {
   analisisProduk: ProductAnalysis;
   setupShooting: SetupShooting;
   scripts: Script[];
+  dubbing?: "Suara sendiri" | "Suara AI";
 }

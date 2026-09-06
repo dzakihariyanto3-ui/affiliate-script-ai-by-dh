@@ -4,6 +4,9 @@ import {
   buildAnalyzePrompt,
   buildSetupPrompt,
   buildGeneratePrompt,
+  buildRegenerateHookPrompt,
+  buildRegenerateNarasiPrompt,
+  buildRegenerateCtaPrompt,
 } from "@/lib/prompt-engine";
 import {
   validateProductAnalysis,
@@ -178,6 +181,120 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json({ success: true, data: validation.data });
+    }
+
+    if (action === "regenerate_hook") {
+      const { analysis, setup, narasi, cta, angle, previousHook } = payload;
+
+      if (!analysis || !setup || typeof narasi !== "string" || typeof cta !== "string") {
+        return NextResponse.json(
+          { success: false, message: "Data tidak lengkap untuk regenerasi hook." },
+          { status: 400 }
+        );
+      }
+
+      const prompt = buildRegenerateHookPrompt({
+        analysis,
+        setup,
+        narasi,
+        cta,
+        angle: angle || "",
+        previousHook: typeof previousHook === "string" ? previousHook : undefined,
+      });
+
+      const data = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        model: requestedModel,
+        temperature: 0.9,
+      });
+
+      const hook = typeof data?.hook === "string" ? data.hook.trim() : "";
+      if (!hook) {
+        return NextResponse.json(
+          { success: false, message: "Gagal menghasilkan hook baru dari AI." },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.json({ success: true, data: { hook } });
+    }
+
+    if (action === "regenerate_narasi") {
+      const { analysis, setup, hook, cta, angle, dubbing, previousNarasi } = payload;
+
+      if (!analysis || !setup || typeof hook !== "string" || typeof cta !== "string") {
+        return NextResponse.json(
+          { success: false, message: "Data tidak lengkap untuk regenerasi narasi." },
+          { status: 400 }
+        );
+      }
+
+      const prompt = buildRegenerateNarasiPrompt({
+        analysis,
+        setup,
+        hook,
+        cta,
+        angle: angle || "",
+        dubbing: dubbing === "Suara AI" ? "Suara AI" : "Suara sendiri",
+        previousNarasi: typeof previousNarasi === "string" ? previousNarasi : undefined,
+      });
+
+      const data = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        model: requestedModel,
+        temperature: 0.9,
+      });
+
+      const narasi = typeof data?.narasi === "string" ? data.narasi.trim() : "";
+      const footage = Array.isArray(data?.footage) ? data.footage.map(String) : [];
+
+      if (!narasi) {
+        return NextResponse.json(
+          { success: false, message: "Gagal menghasilkan narasi baru dari AI." },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.json({ success: true, data: { narasi, footage } });
+    }
+
+    if (action === "regenerate_cta") {
+      const { analysis, setup, hook, narasi, angle, previousCta } = payload;
+
+      if (!analysis || typeof hook !== "string" || typeof narasi !== "string") {
+        return NextResponse.json(
+          { success: false, message: "Data tidak lengkap untuk regenerasi CTA." },
+          { status: 400 }
+        );
+      }
+
+      const prompt = buildRegenerateCtaPrompt({
+        analysis,
+        setup,
+        hook,
+        narasi,
+        angle: angle || "",
+        previousCta: typeof previousCta === "string" ? previousCta : undefined,
+      });
+
+      const data = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        model: requestedModel,
+        temperature: 0.9,
+      });
+
+      const cta = typeof data?.cta === "string" ? data.cta.trim() : "";
+      if (!cta) {
+        return NextResponse.json(
+          { success: false, message: "Gagal menghasilkan CTA baru dari AI." },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.json({ success: true, data: { cta } });
     }
 
     return NextResponse.json(

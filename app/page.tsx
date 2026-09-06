@@ -44,7 +44,7 @@ export default function BerandaPage() {
             textAlign: "center",
           }}
         >
-          Buat Script Affiliate TikTok Lebih Cepat
+          Buat Script Konten Affiliate Lebih Cepat
         </h1>
         <p
           className="font-body text-on-surface-variant"
@@ -57,8 +57,7 @@ export default function BerandaPage() {
             marginRight: "auto",
           }}
         >
-          Analisis produk, tentukan setup shooting, lalu dapatkan script, footage,
-          caption, dan hashtag yang siap digunakan.
+          Upload foto produk dan deskripsi produk → jawab beberapa pertanyaan → dapatkan script, footage, caption, dan hashtag.
         </p>
 
         <div
