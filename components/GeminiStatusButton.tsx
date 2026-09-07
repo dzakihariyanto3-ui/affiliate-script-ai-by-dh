@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useApp } from "@/lib/app-context";
+import { IconAiSymbol } from "./Icons";
 
 export default function GeminiStatusButton() {
   const { status } = useApp();
@@ -37,15 +38,7 @@ export default function GeminiStatusButton() {
       }}
       title="Konfigurasi API Gemini"
     >
-      <span
-        style={{
-          width: "7px",
-          height: "7px",
-          borderRadius: "50%",
-          backgroundColor: dotColor,
-          display: "inline-block",
-        }}
-      />
+      <IconAiSymbol size={15} color={dotColor} />
       <span>{statusLabel}</span>
     </Link>
   );

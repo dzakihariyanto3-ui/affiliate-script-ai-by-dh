@@ -1,6 +1,7 @@
 "use client";
 
 import { ApiStatus } from "@/lib/types";
+import { IconAiSymbol } from "./Icons";
 
 const statusConfig: Record<
   ApiStatus,
@@ -43,15 +44,7 @@ export default function StatusBadge({ status }: { status: ApiStatus }) {
         color: current.textColor,
       }}
     >
-      <span
-        style={{
-          width: "7px",
-          height: "7px",
-          borderRadius: "50%",
-          backgroundColor: current.dotColor,
-          display: "inline-block",
-        }}
-      />
+      <IconAiSymbol size={14} color={current.dotColor} />
       <span>{current.label}</span>
     </span>
   );

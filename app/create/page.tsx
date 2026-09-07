@@ -7,6 +7,7 @@ import { useApp } from "@/lib/app-context";
 import UploadPhotos from "@/components/UploadPhotos";
 import ConditionForm from "@/components/ConditionForm";
 import GenerationProgress from "@/components/GenerationProgress";
+import { IconAiSymbol } from "@/components/Icons";
 import {
   CreatorConditions,
   ProductAnalysis,
@@ -372,10 +373,11 @@ export default function CreateProjectPage() {
           <button
             type="button"
             className="btn-primary"
-            style={{ padding: "14px 36px", fontSize: "15px" }}
+            style={{ padding: "14px 36px", fontSize: "15px", display: "inline-flex", alignItems: "center", gap: "8px" }}
             onClick={handleAnalyze}
             disabled={photoCount !== 5 || status !== "connected"}
           >
+            <IconAiSymbol size={18} color="white" />
             <span>Analisis Produk</span>
             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
               search_check
@@ -1062,18 +1064,14 @@ export default function CreateProjectPage() {
                   onClick={() => setDubbing("Suara AI")}
                 >
                   <div style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}>
-                    <span
-                      className="material-symbols-outlined fill"
-                      style={{
-                        fontSize: "28px",
-                        color:
-                          dubbing === "Suara AI"
-                            ? "var(--secondary)"
-                            : "var(--on-surface-variant)",
-                      }}
-                    >
-                      robot_2
-                    </span>
+                    <IconAiSymbol
+                      size={28}
+                      color={
+                        dubbing === "Suara AI"
+                          ? "var(--secondary)"
+                          : "var(--on-surface-variant)"
+                      }
+                    />
                     <div>
                       <h4 className="font-subheading text-primary" style={{ marginBottom: "4px" }}>
                         Suara AI
@@ -1160,8 +1158,9 @@ export default function CreateProjectPage() {
                 type="button"
                 className="btn-primary"
                 onClick={handleGenerate}
-                style={{ padding: "12px 28px" }}
+                style={{ padding: "12px 28px", display: "inline-flex", alignItems: "center", gap: "8px" }}
               >
+                <IconAiSymbol size={18} color="white" />
                 <span>Mulai Buat Script</span>
                 <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
                   arrow_forward

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useApp } from "@/lib/app-context";
 import StatusBadge from "@/components/StatusBadge";
+import { IconAiSymbol } from "@/components/Icons";
 
 const instructions = [
   "Kunjungi situs Google AI Studio melalui tombol di bawah.",
@@ -57,9 +58,10 @@ export default function SettingsPage() {
         <header style={{ marginBottom: "24px" }}>
           <h1
             className="font-headline-lg-mobile md-headline-lg text-primary"
-            style={{ marginBottom: "8px", fontWeight: 700 }}
+            style={{ marginBottom: "8px", fontWeight: 700, display: "flex", alignItems: "center", gap: "10px" }}
           >
-            Pengaturan API Gemini
+            <IconAiSymbol size={30} color="var(--primary)" />
+            <span>Pengaturan API Gemini</span>
           </h1>
           <p className="font-body text-on-surface-variant" style={{ fontSize: "15px" }}>
             Kelola kunci API Anda untuk mengaktifkan fitur pembuatan skrip AI yang
@@ -175,7 +177,7 @@ export default function SettingsPage() {
                 type="submit"
                 className="btn-primary"
                 disabled={testing || !inputValue.trim()}
-                style={{ padding: "8px 20px", fontSize: "13px" }}
+                style={{ padding: "8px 20px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}
               >
                 {testing ? (
                   <>
@@ -185,7 +187,10 @@ export default function SettingsPage() {
                     Menguji…
                   </>
                 ) : (
-                  "Uji Koneksi"
+                  <>
+                    <IconAiSymbol size={15} color="white" />
+                    <span>Uji Koneksi</span>
+                  </>
                 )}
               </button>
             </div>

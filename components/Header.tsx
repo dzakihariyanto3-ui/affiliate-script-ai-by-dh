@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import GeminiStatusButton from "./GeminiStatusButton";
-import { IconYinYang } from "./Icons";
+import { IconAiSymbol } from "./Icons";
 
 const navItems = [
   { href: "/", label: "Beranda", icon: "home" },
@@ -58,7 +58,7 @@ export default function Header() {
               textDecoration: "none",
             }}
           >
-            <IconYinYang size={22} />
+            <IconAiSymbol size={22} color="var(--primary)" />
             <span>Affiliate Script AI</span>
           </Link>
 
