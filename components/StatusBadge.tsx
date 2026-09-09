@@ -1,7 +1,6 @@
 "use client";
 
 import { ApiStatus } from "@/lib/types";
-import { IconAiSymbol } from "./Icons";
 
 const statusConfig: Record<
   ApiStatus,
@@ -9,8 +8,8 @@ const statusConfig: Record<
 > = {
   idle: {
     label: "Belum Terhubung",
-    dotColor: "#ba1a1a",
-    textColor: "#ba1a1a",
+    dotColor: "#9CA3AF",
+    textColor: "var(--on-surface-variant)",
   },
   checking: {
     label: "Memeriksa…",
@@ -24,8 +23,8 @@ const statusConfig: Record<
   },
   error: {
     label: "Tidak Terhubung",
-    dotColor: "#ba1a1a",
-    textColor: "#ba1a1a",
+    dotColor: "#9CA3AF",
+    textColor: "var(--on-surface-variant)",
   },
 };
 
@@ -44,7 +43,16 @@ export default function StatusBadge({ status }: { status: ApiStatus }) {
         color: current.textColor,
       }}
     >
-      <IconAiSymbol size={14} color={current.dotColor} />
+      <span
+        style={{
+          display: "inline-block",
+          width: "8px",
+          height: "8px",
+          borderRadius: "50%",
+          backgroundColor: current.dotColor,
+          flexShrink: 0,
+        }}
+      />
       <span>{current.label}</span>
     </span>
   );

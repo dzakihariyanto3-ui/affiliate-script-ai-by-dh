@@ -342,27 +342,23 @@ export function IconAiSymbol({
   className?: string;
 }) {
   return (
-    <svg
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/ai-logo.png"
+      alt="AI Scriptodh"
       width={size}
       height={size}
-      viewBox="0 0 24 24"
-      fill={color || "currentColor"}
-      xmlns="http://www.w3.org/2000/svg"
       style={{
         display: "inline-block",
         verticalAlign: "middle",
         flexShrink: 0,
+        objectFit: "contain",
+        aspectRatio: "1 / 1",
         ...style,
       }}
       className={className}
       aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M 12.01 1.71 C 12.29 8.64, 15.40 12.30, 22.50 12.00 C 15.83 13.38, 12.64 14.61, 12.01 22.29 C 11.35 14.84, 8.08 13.34, 1.50 12.00 C 8.82 12.25, 11.58 8.45, 12.01 1.71 Z M 12.01 11.00 C 11.64 11.67, 10.74 12.16, 8.42 12.34 C 10.77 12.53, 11.55 12.49, 12.01 14.59 C 12.26 12.84, 13.40 12.39, 15.42 12.34 C 13.40 12.29, 12.37 11.67, 12.01 11.00 Z"
-      />
-    </svg>
+    />
   );
 }
 

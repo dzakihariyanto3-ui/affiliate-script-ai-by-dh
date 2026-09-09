@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import GeminiStatusButton from "./GeminiStatusButton";
-import { IconAiSymbol } from "./Icons";
 
 const navItems = [
   { href: "/", label: "Beranda", icon: "home" },
@@ -58,7 +58,14 @@ export default function Header() {
               textDecoration: "none",
             }}
           >
-            <IconAiSymbol size={22} color="var(--primary)" />
+            <Image
+              src="/logo-new.png"
+              alt="Scriptodh Logo"
+              width={32}
+              height={32}
+              style={{ objectFit: "contain", display: "block" }}
+              priority
+            />
             <span>Affiliate Script AI</span>
           </Link>
 

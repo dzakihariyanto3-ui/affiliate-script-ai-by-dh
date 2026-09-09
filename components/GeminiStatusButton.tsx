@@ -9,14 +9,13 @@ export default function GeminiStatusButton() {
 
   const isConnected = status === "connected";
   const isChecking = status === "checking";
-  const isError = status === "error";
 
-  const dotColor = isConnected ? "#22C55E" : isChecking ? "#0453cd" : "#ba1a1a";
+  const dotColor = isConnected ? "#22C55E" : isChecking ? "#0453cd" : "#9CA3AF";
   const statusLabel = isConnected
     ? "Gemini AI · Terhubung"
     : isChecking
     ? "Gemini AI · Memeriksa"
-    : isError
+    : status === "error"
     ? "Gemini AI · Tidak Terhubung"
     : "Gemini AI · Belum Terhubung";
 
@@ -38,7 +37,21 @@ export default function GeminiStatusButton() {
       }}
       title="Konfigurasi API Gemini"
     >
-      <IconAiSymbol size={15} color={dotColor} />
+      {/* AI Scriptodh logo */}
+      <IconAiSymbol size={16} />
+      {/* Status dot */}
+      <span
+        style={{
+          display: "inline-block",
+          width: "7px",
+          height: "7px",
+          borderRadius: "50%",
+          backgroundColor: dotColor,
+          flexShrink: 0,
+          marginLeft: "-4px",
+          marginBottom: "6px",
+        }}
+      />
       <span>{statusLabel}</span>
     </Link>
   );
