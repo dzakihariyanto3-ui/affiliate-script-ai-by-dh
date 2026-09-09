@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useApp } from "@/lib/app-context";
 import StatusBadge from "@/components/StatusBadge";
-import { IconAiSymbol } from "@/components/Icons";
 
 export default function BerandaPage() {
   const { status, statusMessage } = useApp();
@@ -73,18 +72,16 @@ export default function BerandaPage() {
           <Link
             href="/create"
             className="btn-primary"
-            style={{ padding: "14px 32px", fontSize: "15px", display: "inline-flex", alignItems: "center", gap: "8px" }}
+            style={{ padding: "14px 32px", fontSize: "15px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
           >
-            <IconAiSymbol size={18} color="white" />
             <span>Buat Proyek Baru</span>
           </Link>
           {status !== "connected" && (
             <Link
               href="/settings"
               className="btn-secondary"
-              style={{ padding: "14px 24px", fontSize: "15px", display: "inline-flex", alignItems: "center", gap: "8px" }}
+              style={{ padding: "14px 24px", fontSize: "15px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
             >
-              <IconAiSymbol size={16} color="var(--secondary)" />
               <span>Hubungkan Gemini</span>
             </Link>
           )}
