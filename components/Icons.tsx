@@ -344,7 +344,7 @@ export function IconAiSymbol({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/ai-logo.png"
+      src="/logo-black.png"
       alt="AI Scriptodh"
       width={size}
       height={size}

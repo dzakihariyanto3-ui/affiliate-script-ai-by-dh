@@ -6,6 +6,14 @@ import Header from "@/components/Header";
 export const metadata: Metadata = {
   title: "Affiliate Script AI - Buat Script Affiliate TikTok Lebih Cepat",
   description: "Upload produk, tentukan setup shooting, lalu dapatkan script, footage, caption, dan hashtag yang siap digunakan.",
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.ico" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 export const viewport: Viewport = {

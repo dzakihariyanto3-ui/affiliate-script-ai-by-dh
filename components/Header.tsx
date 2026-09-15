@@ -59,7 +59,7 @@ export default function Header() {
             }}
           >
             <Image
-              src="/logo-new.png"
+              src="/logo-black.png"
               alt="Scriptodh Logo"
               width={32}
               height={32}

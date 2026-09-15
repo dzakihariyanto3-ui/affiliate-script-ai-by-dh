@@ -377,7 +377,7 @@ export default function CreateProjectPage() {
             onClick={handleAnalyze}
             disabled={photoCount !== 5 || status !== "connected"}
           >
-            <IconAiSymbol size={18} color="white" />
+            <IconAiSymbol size={18} />
             <span>Analisis Produk</span>
             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
               search_check
