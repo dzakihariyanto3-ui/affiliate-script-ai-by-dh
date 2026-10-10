@@ -330,36 +330,8 @@ export function IconArrowForward({ size = 14 }: { size?: number }) {
   );
 }
 
-export function IconAiSymbol({
-  size = 22,
-  color,
-  style,
-  className,
-}: {
-  size?: number;
-  color?: string;
-  style?: React.CSSProperties;
-  className?: string;
-}) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/logo-black.png"
-      alt="AI Scriptodh"
-      width={size}
-      height={size}
-      style={{
-        display: "inline-block",
-        verticalAlign: "middle",
-        flexShrink: 0,
-        objectFit: "contain",
-        aspectRatio: "1 / 1",
-        ...style,
-      }}
-      className={className}
-      aria-hidden="true"
-    />
-  );
+export function IconAiSymbol() {
+  return null;
 }
 
 export function IconYinYang({ size = 22 }: { size?: number }) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconAiSymbol } from "./Icons";
+
 
 const processSteps = [
   {
@@ -78,9 +78,6 @@ export default function GenerationProgress({
       }}
     >
       <header style={{ textAlign: "center", marginBottom: "32px" }}>
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "12px" }}>
-          <IconAiSymbol size={36} color="var(--secondary)" />
-        </div>
         <h2
           className="font-headline-lg-mobile md-headline-lg text-primary"
           style={{ marginBottom: "8px", fontWeight: 700 }}
