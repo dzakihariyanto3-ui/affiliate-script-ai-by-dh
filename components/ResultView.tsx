@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { GeneratedResult, Script } from "@/lib/types";
-import { formatAllResult, formatScript } from "@/lib/format";
+import { formatAllResult, formatScript, getDisplayNarasi } from "@/lib/format";
 import { useApp } from "@/lib/app-context";
 
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -33,37 +33,14 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-/**
- * Memotong narasi di tampilan UI agar dimulai dari penanda [2],
- * karena bagian [1] berisi hook yang sudah ditampilkan secara terpisah di kotak HOOK.
- */
-function getDisplayNarasi(narasi: string, hook?: string): string {
-  if (!narasi) return "";
-
-  // Cari posisi penanda [2]
-  const match2 = narasi.match(/\[\s*2\s*\]/);
-  if (match2 && typeof match2.index === "number") {
-    return narasi.slice(match2.index).trim();
-  }
-
-  // Fallback jika penanda [2] tidak ditemukan tapi narasi diawali teks hook
-  if (hook) {
-    const cleanHook = hook.trim();
-    const hookWithMarker = `[1] ${cleanHook}`;
-    if (narasi.startsWith(hookWithMarker)) {
-      return narasi.slice(hookWithMarker.length).trim();
-    }
-    if (narasi.startsWith(cleanHook)) {
-      return narasi.slice(cleanHook.length).trim();
-    }
-  }
-
-  return narasi;
-}
-
 export default function ResultView({ result }: { result: GeneratedResult }) {
   const { apiKey, projectResult, setProjectResult } = useApp();
-  const [scripts, setScripts] = useState<Script[]>(result.scripts);
+  const [scripts, setScripts] = useState<Script[]>(() =>
+    result.scripts.map((s) => ({
+      ...s,
+      ctaEmbedded: s.ctaEmbedded || s.cta,
+    }))
+  );
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [copiedAll, setCopiedAll] = useState(false);
   const [accordionOpen, setAccordionOpen] = useState(false);
@@ -71,13 +48,27 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
   const [regenerateError, setRegenerateError] = useState<string | null>(null);
 
   useEffect(() => {
-    setScripts(result.scripts);
+    setScripts((prev) => {
+      return result.scripts.map((s, idx) => {
+        const existing = prev[idx];
+        return {
+          ...s,
+          // Pertahankan ctaEmbedded yang sudah ada agar narasi tidak kembali memuat CTA lama
+          ctaEmbedded: existing?.ctaEmbedded || s.ctaEmbedded || s.cta,
+        };
+      });
+    });
   }, [result]);
 
   const handleCopySingle = async (index: number) => {
     const script = scripts[index];
     if (!script) return;
-    const ok = await copyToClipboard(formatScript(script, index));
+    const displayNarasi = getDisplayNarasi(
+      script.narasi,
+      script.hook,
+      script.ctaEmbedded || script.cta
+    );
+    const ok = await copyToClipboard(formatScript(script, index, displayNarasi));
     if (ok) {
       setCopiedIndex(index);
       setTimeout(() => setCopiedIndex(null), 2000);
@@ -89,7 +80,10 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       ...result,
       scripts,
     };
-    const ok = await copyToClipboard(formatAllResult(currentResult));
+    const displayNarasis = scripts.map((s) =>
+      getDisplayNarasi(s.narasi, s.hook, s.ctaEmbedded || s.cta)
+    );
+    const ok = await copyToClipboard(formatAllResult(currentResult, displayNarasis));
     if (ok) {
       setCopiedAll(true);
       setTimeout(() => setCopiedAll(false), 2000);
@@ -186,12 +180,15 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       }
 
       const { narasi: newNarasi, footage: newFootage } = resData.data;
+      const currentActiveCta = script.cta;
       setScripts((prev) => {
         const next = [...prev];
         next[index] = {
           ...next[index],
           narasi: newNarasi,
           footage: Array.isArray(newFootage) && newFootage.length > 0 ? newFootage : next[index].footage,
+          // Perbarui ctaEmbedded sesuai CTA yang aktif saat regenerasi narasi
+          ctaEmbedded: currentActiveCta,
         };
         if (projectResult) {
           setProjectResult({ ...projectResult, scripts: next });
@@ -701,7 +698,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                             padding: "4px 0",
                           }}
                         >
-                          {getDisplayNarasi(script.narasi, script.hook)}
+                          {getDisplayNarasi(script.narasi, script.hook, script.ctaEmbedded || script.cta)}
                         </div>
 
                         {/* Footage List */}

@@ -53,6 +53,7 @@ export interface Script {
   cta: string;
   caption: string;
   hashtags: string[];
+  ctaEmbedded?: string;
 }
 
 export interface GeneratedResult {
