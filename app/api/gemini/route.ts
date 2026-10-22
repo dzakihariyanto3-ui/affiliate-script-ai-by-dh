@@ -7,7 +7,10 @@ import {
   buildRegenerateHookPrompt,
   buildRegenerateNarasiPrompt,
   buildRegenerateCtaPrompt,
+  FINAL_CTAS,
+  getNextCta,
 } from "@/lib/prompt-engine";
+import { normalizeForMatch } from "@/lib/format";
 import {
   validateProductAnalysis,
   validateSetupShooting,
@@ -180,6 +183,30 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Pastikan CTA setiap script adalah salah satu dari 6 CTA final tanpa duplikasi dalam satu batch
+      const usedCtas = new Set<string>();
+      const sequenceIndices = [0, 2, 4, 1, 3, 5]; // Rotasi: 1A, 2A, 3A, 1B, 2B, 3B
+      validation.data.scripts = validation.data.scripts.map((script, idx) => {
+        const rawCta = script.cta || "";
+        const matched = FINAL_CTAS.find(
+          (c) => normalizeForMatch(c.text) === normalizeForMatch(rawCta)
+        );
+        let finalCtaText = matched ? matched.text : "";
+        if (!finalCtaText || usedCtas.has(finalCtaText)) {
+          const seqIdx = sequenceIndices[idx % sequenceIndices.length];
+          finalCtaText = FINAL_CTAS[seqIdx].text;
+          if (usedCtas.has(finalCtaText)) {
+            const available = FINAL_CTAS.find((c) => !usedCtas.has(c.text));
+            if (available) finalCtaText = available.text;
+          }
+        }
+        usedCtas.add(finalCtaText);
+        return {
+          ...script,
+          cta: finalCtaText,
+        };
+      });
+
       return NextResponse.json({ success: true, data: validation.data });
     }
 
@@ -261,7 +288,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "regenerate_cta") {
-      const { analysis, setup, hook, narasi, angle, previousCta } = payload;
+      const { analysis, setup, hook, narasi, angle, previousCta, targetType } = payload;
 
       if (!analysis || typeof hook !== "string" || typeof narasi !== "string") {
         return NextResponse.json(
@@ -277,6 +304,7 @@ export async function POST(request: NextRequest) {
         narasi,
         angle: angle || "",
         previousCta: typeof previousCta === "string" ? previousCta : undefined,
+        targetType: typeof targetType === "number" ? targetType : undefined,
       });
 
       const data = await callGeminiJSON({
@@ -286,7 +314,13 @@ export async function POST(request: NextRequest) {
         temperature: 0.9,
       });
 
-      const cta = typeof data?.cta === "string" ? data.cta.trim() : "";
+      const rawCta = typeof data?.cta === "string" ? data.cta.trim() : "";
+      // Cocokkan dengan salah satu dari 6 CTA final untuk memastikan salinan 100% persis
+      const matched = FINAL_CTAS.find(
+        (c) => normalizeForMatch(c.text) === normalizeForMatch(rawCta)
+      );
+      const cta = matched ? matched.text : getNextCta(previousCta, targetType);
+
       if (!cta) {
         return NextResponse.json(
           { success: false, message: "Gagal menghasilkan CTA baru dari AI." },

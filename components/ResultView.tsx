@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { GeneratedResult, Script } from "@/lib/types";
 import { formatAllResult, formatScript, getDisplayNarasi } from "@/lib/format";
+import { getCtaType, getNextCta } from "@/lib/prompt-engine";
 import { useApp } from "@/lib/app-context";
 
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -207,8 +208,22 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
   const handleRegenerateCta = async (index: number) => {
     const script = scripts[index];
     if (!script) return;
+
+    // Tipe target ditentukan oleh aplikasi, utamakan berpindah ke tipe lain (1 → 2 → 3 → 1 ...)
+    const currentType = getCtaType(script.cta);
+    const nextTargetType = currentType ? ((currentType % 3) + 1) : 1;
+
+    // Jika API Key tidak ada, aplikasi memilih CTA langsung dari 6 CTA final tanpa menunggu model
     if (!apiKey) {
-      setRegenerateError("API Key belum terhubung. Silakan atur di menu Pengaturan.");
+      const nextCta = getNextCta(script.cta, nextTargetType);
+      setScripts((prev) => {
+        const next = [...prev];
+        next[index] = { ...next[index], cta: nextCta };
+        if (projectResult) {
+          setProjectResult({ ...projectResult, scripts: next });
+        }
+        return next;
+      });
       return;
     }
 
@@ -231,6 +246,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
           narasi: script.narasi,
           angle: script.angle,
           previousCta: script.cta,
+          targetType: nextTargetType,
         }),
       });
 
@@ -249,9 +265,16 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
         return next;
       });
     } catch (err) {
-      setRegenerateError(
-        err instanceof Error ? err.message : "Gagal mengganti CTA."
-      );
+      // Fallback ke seleksi langsung dari 6 CTA final jika terjadi kendala jaringan
+      const fallbackCta = getNextCta(script.cta, nextTargetType);
+      setScripts((prev) => {
+        const next = [...prev];
+        next[index] = { ...next[index], cta: fallbackCta };
+        if (projectResult) {
+          setProjectResult({ ...projectResult, scripts: next });
+        }
+        return next;
+      });
     } finally {
       setLoadingMap((prev) => ({ ...prev, [key]: false }));
     }

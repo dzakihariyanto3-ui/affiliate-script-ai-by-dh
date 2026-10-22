@@ -3,6 +3,87 @@ import {
   ProductAnalysis,
   SetupShooting,
 } from "./types";
+import { normalizeForMatch } from "./format";
+
+export interface FinalCta {
+  type: 1 | 2 | 3;
+  id: "1A" | "1B" | "2A" | "2B" | "3A" | "3B";
+  text: string;
+}
+
+export const FINAL_CTAS: readonly FinalCta[] = [
+  {
+    type: 1,
+    id: "1A",
+    text: "Paling cuma 5% dari kalian yang bisa dapet harga promo ini. Coba aja cek keranjang kuning, dapet berapa?",
+  },
+  {
+    type: 1,
+    id: "1B",
+    text: "Gak usah dibeli sekarang. Tapi mending cek keranjang kuning dulu, simpan, biar gak nyesel pas butuh.",
+  },
+  {
+    type: 2,
+    id: "2A",
+    text: "Video ini cuma lewat di FYP orang-orang hoki. Cek keranjang kuning sekarang, voucher diskonnya masih ada gak?",
+  },
+  {
+    type: 2,
+    id: "2B",
+    text: "Gue gak tau diskon keranjang kuning ini bakal bertahan berapa jam lagi, yang penting amankan dulu stoknya.",
+  },
+  {
+    type: 3,
+    id: "3A",
+    text: "Jujur ini rugi sih sellernya. Buka keranjang kuning deh, harganya gak masuk akal banget untuk barang sebagus ini.",
+  },
+  {
+    type: 3,
+    id: "3B",
+    text: "Daripada penasaran terus tiap malam, mending klik keranjang kuning sekarang. Checkout-nya belakangan.",
+  },
+] as const;
+
+export function getCtaType(ctaText?: string): 1 | 2 | 3 | undefined {
+  if (!ctaText) return undefined;
+  const trimmed = ctaText.trim();
+  const match = FINAL_CTAS.find(
+    (item) => item.text === trimmed || normalizeForMatch(item.text) === normalizeForMatch(trimmed)
+  );
+  return match?.type;
+}
+
+export function getNextCta(currentCta?: string, targetType?: number): string {
+  const cleanCurrent = currentCta?.trim() || "";
+  const currentIdx = FINAL_CTAS.findIndex(
+    (item) =>
+      item.text === cleanCurrent ||
+      normalizeForMatch(item.text) === normalizeForMatch(cleanCurrent)
+  );
+
+  if (targetType && targetType >= 1 && targetType <= 3) {
+    const candidates = FINAL_CTAS.filter((item) => item.type === targetType);
+    const different = candidates.find(
+      (item) =>
+        item.text !== cleanCurrent &&
+        normalizeForMatch(item.text) !== normalizeForMatch(cleanCurrent)
+    );
+    return (different || candidates[0]).text;
+  }
+
+  // Sequence rotasi: 1A (0) -> 2A (2) -> 3A (4) -> 1B (1) -> 2B (3) -> 3B (5) -> 1A (0)
+  const sequence = [0, 2, 4, 1, 3, 5];
+  const seqPos = sequence.indexOf(currentIdx);
+  if (seqPos !== -1) {
+    const nextSeqIdx = sequence[(seqPos + 1) % sequence.length];
+    return FINAL_CTAS[nextSeqIdx].text;
+  }
+
+  const currentType = currentIdx !== -1 ? FINAL_CTAS[currentIdx].type : undefined;
+  const nextType = currentType ? ((currentType % 3) + 1) : 1;
+  const candidates = FINAL_CTAS.filter((item) => item.type === nextType);
+  return candidates[0].text;
+}
 
 export function buildAnalyzePrompt(): string {
   return `
@@ -469,54 +550,36 @@ Estimasi word count berdasarkan metode dubbing:
 
 Jika pesan sudah lengkap sebelum batas minimum, jangan tambahkan kata kosong.
 
-── 14. CTA — LANGSUNG, SPESIFIK, TANPA BASA-BASI ────
+── 14. CTA — PILIH SATU DARI 6 CTA FINAL, SALIN PERSIS ───
 
-CTA bukan ajakan yang sopan. CTA adalah informasi pembelian yang langsung dan konkret.
+CTA setiap script WAJIB salah satu dari enam kalimat di bawah, disalin persis
+tanpa perubahan apa pun. Dilarang membuat CTA sendiri di luar daftar ini.
 
-Formula CTA yang benar:
-[Jumlah / paket yang didapat] + [harga] + [lokasi tombol beli]
+TIPE 1 — SKEPTIS / PROVOKASI EGO (nge-tes penonton)
+Memicu orang yang gengsi atau penasaran karena merasa ditantang.
+1A. "Paling cuma 5% dari kalian yang bisa dapet harga promo ini. Coba aja cek keranjang kuning, dapet berapa?"
+1B. "Gak usah dibeli sekarang. Tapi mending cek keranjang kuning dulu, simpan, biar gak nyesel pas butuh."
 
-Dua gaya ending yang diizinkan:
-- Gaya A — Langsung bersih: "[info], [harga] di keranjang kuning."
-- Gaya B — Soft invite: "[info], buat yang mau langsung cek di keranjang kuning."
+TIPE 2 — FOMO EKSTREM / ORANG DALAM (sensasi rahasia)
+Bikin penonton merasa dapat privilege atau akses khusus yang cuma sebentar.
+2A. "Video ini cuma lewat di FYP orang-orang hoki. Cek keranjang kuning sekarang, voucher diskonnya masih ada gak?"
+2B. "Gue gak tau diskon keranjang kuning ini bakal bertahan berapa jam lagi, yang penting amankan dulu stoknya."
 
-Yang TIDAK boleh ada di CTA:
-- "Kalau tertarik bisa dicek ya" → terlalu ragu-ragu
-- "Mending kalian amankan sekarang" → terasa memaksa
-- Kata "ya" di akhir kalimat CTA apapun → DILARANG KERAS
-- Klaim promo, diskon, atau penghematan yang tidak ada di Level 1 evidence
-  Contoh yang DILARANG: "diskon 50 persen", "harga coret", "hemat sekian persen"
-  → Jika tidak ada bukti diskon di foto/data produk, jangan sebut diskon apapun
+TIPE 3 — EFEK KAGET / UNFAIR ADVANTAGE
+Membandingkan manfaat besar dengan harga yang terlihat sangat tidak masuk akal di keranjang kuning.
+3A. "Jujur ini rugi sih sellernya. Buka keranjang kuning deh, harganya gak masuk akal banget untuk barang sebagus ini."
+3B. "Daripada penasaran terus tiap malam, mending klik keranjang kuning sekarang. Checkout-nya belakangan."
 
-Jika harga tidak tersedia di evidence:
-Cukup sebut lokasi tombol beli: "Di keranjang kuning."
-
-REFERENSI CTA YANG SUDAH DIKURASI (Gunakan sebagai inspirasi gaya, bukan disalin):
-- "Satu paket lengkap harga cuma 30 ribuan, di keranjang kiri bawah."
-- "Harga 114 ribuan udah dapet unit sama aksesorisnya, di keranjang kuning."
-- "Satu set isi 100 piece cuma 30 ribuan guys, buat yang mau langsung cek di keranjang kuning."
-- "89 ribuan udah dapet semuanya, buat yang mau langsung order di keranjang kuning."
-- "Cuma 45 ribuan satu paket, langsung aja ke keranjang kuning."
-- "Isi 5 bungkus harga 25 ribuan, di keranjang kuning."
-- "Udah termasuk charger sama baterainya, 114 ribu di keranjang kuning."
-- "Paket lengkapnya 99 ribuan, buat yang mau langsung cek di keranjang kuning."
-- "Dapet unit plus nozzle set, total 114 ribuan di keranjang kuning."
-- "Harga normalnya dua kali lipat, di sini cuma 114 ribuan di keranjang kuning."
-- "Satu pcs 15 ribuan aja, di keranjang kiri bawah."
-- "Satu set 100 piece cuma 30 ribuan, buat yang tertarik langsung cek di keranjang kiri."
-- "Udah ada garansinya juga, 250 ribuan di keranjang kuning."
-- "Harga 75 ribuan dapet dua ukuran sekaligus, di keranjang kuning."
-- "Satu pack isi 10 lembar 20 ribuan, di keranjang kiri."
-- "Lengkap sama manualnya, 189 ribuan di keranjang kuning."
-- "Per unit 8 ribuan, kalau beli 5 jadi 35 ribuan di keranjang kuning."
-- "Satu set komplit 149 ribuan guys, di keranjang kiri."
-- "Dapet 3 variasi ukuran sekaligus, 45 ribuan di keranjang kuning."
-- "Isi 50 pcs cuma 25 ribuan, buat yang mau langsung cek di keranjang."
-- "Harganya cuma 89 ribuan, di keranjang kuning."
-- "Udah termasuk baterainya, total 114 ribuan di keranjang kuning."
-- "Satu paket 30 ribuan isi lengkap, di keranjang kiri bawah."
-- "114 ribuan dapet semuanya, buat yang mau langsung cek di keranjang kuning."
-- "Satu box isi 12 harga 67 ribuan, di keranjang kiri."
+ATURAN PEMAKAIAN
+1. Salin persis. Tidak boleh ada kata yang ditambah, dihapus, atau diganti.
+2. Dalam satu batch script, jangan memakai CTA yang sama dua kali.
+   Gunakan tipe secara bergantian (script 1 → Tipe 1, script 2 → Tipe 2,
+   script 3 → Tipe 3, lalu ulangi dari Tipe 1 dengan CTA pasangannya).
+3. Narasi harus berakhir dengan kalimat yang nyambung secara natural ke CTA yang dipilih.
+4. CTA ini adalah teks final dari pemilik. Claim audit, spec audit, dan self-review
+   TIDAK BOLEH mengubah, menghapus, atau menulis ulang CTA ini.
+5. Larangan klaim pada prinsip lain (tidak boleh mengarang diskon, promo, angka)
+   berlaku untuk NARASI dan HOOK, tidak untuk enam CTA final ini.
 
 ── 15. CAPTION & HASHTAG ────────────────────────────
 
@@ -527,7 +590,7 @@ Hashtag: tepat 5 hashtag relevan, diawali tanda pagar (#).
 
 Jalankan rantai audit ini sebelum setiap script difinalisasi:
 
-DRAFT → CEK KLAIM → CEK SPEC → CEK MARKER → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOKEN MARKERS → CEK SETUP → CEK DURASI → FINAL
+DRAFT → CEK KLAIM → CEK SPEC → CEK MARKER → CEK POV → CEK FOOTAGE ANCHOR → CEK SPOKEN MARKERS → CEK SETUP → CEK DURASI → CEK CTA → FINAL
 
 (a) Claim audit:
     Apakah semua klaim bisa ditelusuri ke Level 1 atau Level 2?
@@ -560,6 +623,12 @@ DRAFT → CEK KLAIM → CEK SPEC → CEK MARKER → CEK POV → CEK FOOTAGE ANCH
 
 (h) Durasi audit:
     Apakah word count sesuai target untuk metode dubbing yang dipilih?
+
+(i) CTA audit:
+    - CTA adalah salinan persis dari salah satu dari 6 CTA final
+    - Tidak ada CTA yang sama dua kali dalam satu batch
+    - Narasi berakhir dengan kalimat yang nyambung ke CTA
+    - CTA tidak diubah oleh audit lain
 
 JIKA GAGAL SALAH SATU: rewrite sampai lolos sebelum output final.
 
@@ -815,18 +884,22 @@ export function buildRegenerateCtaPrompt(input: {
   narasi: string;
   angle: string;
   previousCta?: string;
+  targetType?: number;
 }): string {
   const { analysis, hook, narasi, angle, previousCta } = input;
   const fl = analysis.faktaLangsung;
 
-  const avoidInstruction = previousCta
-    ? `
-Output sebelumnya yang HARUS DIHINDARI:
-"${previousCta}"
-Hasilkan CTA yang berbeda — gunakan gaya Gaya A jika sebelumnya Gaya B,
-atau variasikan struktur kalimatnya.
-`
-    : "";
+  let resolvedTargetType = input.targetType;
+  if (!resolvedTargetType || resolvedTargetType < 1 || resolvedTargetType > 3) {
+    const prevType = getCtaType(previousCta);
+    resolvedTargetType = prevType ? ((prevType % 3) + 1) : 1;
+  }
+
+  const dynamicTargetInstruction = previousCta
+    ? `CTA TARGET: Tipe ${resolvedTargetType}. Pilih salah satu CTA dari tipe tersebut yang berbeda dari
+CTA sebelumnya, salin persis.
+CTA sebelumnya yang HARUS DIHINDARI: "${previousCta}"`
+    : `CTA TARGET: Tipe ${resolvedTargetType}. Pilih salah satu CTA dari tipe tersebut, salin persis.`;
 
   return `
 Kamu adalah scriptwriter TikTok affiliate Indonesia.
@@ -836,35 +909,40 @@ Berikut elemen script yang sudah ada dan TIDAK BOLEH DIUBAH:
 - Narasi: ${JSON.stringify(narasi)}
 - Angle: ${JSON.stringify(angle)}
 
-${avoidInstruction}
-
 Berikut data produk:
 - Produk: "${fl.produk}"
 - Harga/Promo: "${fl.hargaPromo}"
 - Fitur: ${JSON.stringify(fl.fitur)}
 
-TUGAS: Hasilkan HANYA CTA baru yang:
-1. Menutup narasi di atas secara natural
-2. Mengikuti formula CTA: [jumlah/paket] + [harga] + [lokasi tombol]
-3. Dua gaya ending yang diizinkan:
-   - Gaya A — Langsung bersih: "[info], [harga] di keranjang kuning."
-   - Gaya B — Soft invite: "[info], buat yang mau langsung cek di keranjang kuning."
-4. DILARANG KERAS:
-   - Kata "ya" di akhir kalimat CTA apapun
-   - "Kalau tertarik bisa dicek ya" (terlalu ragu-ragu)
-   - "Mending kalian amankan sekarang" (memaksa)
-   - Menambahkan klaim promo atau diskon yang tidak ada di evidence (diskon 50%, harga coret, dsb.)
-   - Jika harga tidak tersedia di evidence, cukup sebut lokasi tombol beli: "Di keranjang kuning."
+${dynamicTargetInstruction}
 
-REFERENSI CTA YANG SUDAH DIKURASI:
-- "Satu paket lengkap harga cuma 30 ribuan, di keranjang kiri bawah."
-- "Harga 114 ribuan udah dapet unit sama aksesorisnya, di keranjang kuning."
-- "Satu set isi 100 piece cuma 30 ribuan guys, buat yang mau langsung cek di keranjang kuning."
-- "89 ribuan udah dapet semuanya, buat yang mau langsung order di keranjang kuning."
-- "Cuma 45 ribuan satu paket, langsung aja ke keranjang kuning."
-- "Isi 5 bungkus harga 25 ribuan, di keranjang kuning."
-- "Udah termasuk charger sama baterainya, 114 ribu di keranjang kuning."
-- "Paket lengkapnya 99 ribuan, buat yang mau langsung cek di keranjang kuning."
+── CTA — PILIH SATU DARI 6 CTA FINAL, SALIN PERSIS ───
+
+CTA setiap script WAJIB salah satu dari enam kalimat di bawah, disalin persis
+tanpa perubahan apa pun. Dilarang membuat CTA sendiri di luar daftar ini.
+
+TIPE 1 — SKEPTIS / PROVOKASI EGO (nge-tes penonton)
+Memicu orang yang gengsi atau penasaran karena merasa ditantang.
+1A. "Paling cuma 5% dari kalian yang bisa dapet harga promo ini. Coba aja cek keranjang kuning, dapet berapa?"
+1B. "Gak usah dibeli sekarang. Tapi mending cek keranjang kuning dulu, simpan, biar gak nyesel pas butuh."
+
+TIPE 2 — FOMO EKSTREM / ORANG DALAM (sensasi rahasia)
+Bikin penonton merasa dapat privilege atau akses khusus yang cuma sebentar.
+2A. "Video ini cuma lewat di FYP orang-orang hoki. Cek keranjang kuning sekarang, voucher diskonnya masih ada gak?"
+2B. "Gue gak tau diskon keranjang kuning ini bakal bertahan berapa jam lagi, yang penting amankan dulu stoknya."
+
+TIPE 3 — EFEK KAGET / UNFAIR ADVANTAGE
+Membandingkan manfaat besar dengan harga yang terlihat sangat tidak masuk akal di keranjang kuning.
+3A. "Jujur ini rugi sih sellernya. Buka keranjang kuning deh, harganya gak masuk akal banget untuk barang sebagus ini."
+3B. "Daripada penasaran terus tiap malam, mending klik keranjang kuning sekarang. Checkout-nya belakangan."
+
+ATURAN PEMAKAIAN
+1. Salin persis. Tidak boleh ada kata yang ditambah, dihapus, atau diganti.
+2. Narasi yang sudah ada tidak diubah ketika CTA diganti.
+3. CTA ini adalah teks final dari pemilik. Claim audit, spec audit, dan self-review
+   TIDAK BOLEH mengubah, menghapus, atau menulis ulang CTA ini.
+4. Larangan klaim pada prinsip lain (tidak boleh mengarang diskon, promo, angka)
+   berlaku untuk NARASI dan HOOK, tidak untuk enam CTA final ini.
 
 KEMBALIKAN HANYA JSON:
 { "cta": "..." }
