@@ -1,6 +1,7 @@
 import {
   CreatorConditions,
   ProductAnalysis,
+  Script,
   SetupShooting,
 } from "./types";
 import { normalizeForMatch } from "./format";
@@ -676,22 +677,207 @@ Seluruh teks dalam Bahasa Indonesia natural. Tanpa emoji.
 `.trim();
 }
 
+let _cachedPrinciplesBlock: string | null = null;
+
+function getSharedPrinciplesBlock(): string {
+  if (_cachedPrinciplesBlock) return _cachedPrinciplesBlock;
+  const dummyAnalysis: ProductAnalysis = {
+    faktaLangsung: {
+      produk: "",
+      fitur: [],
+      spesifikasi: [],
+      caraPenggunaan: [],
+      informasiPenting: "",
+      hargaPromo: "",
+    },
+    inferensiAman: { kategoriProduk: "", fungsiUtama: "" },
+    interpretasiStrategis: {
+      targetPengguna: "",
+      masalahYangDiselesaikan: "",
+      manfaat: [],
+      keunggulan: [],
+    },
+  };
+  const dummySetup: SetupShooting = {
+    lokasi: "",
+    equipment: "",
+    properti: "",
+    penampilan: "",
+    keterbatasan: "",
+  };
+  const full = buildGeneratePrompt({
+    analysis: dummyAnalysis,
+    setup: dummySetup,
+    dubbing: "Suara sendiri",
+    jumlahScript: 1,
+  });
+
+  const startMarker = "═══════════════════════════════════════════════════════\n17 PRINSIP PEMBUATAN SCRIPT";
+  const endMarker = "═══════════════════════════════════════════════════════\nKEMBALIKAN HANYA JSON MURNI";
+  const startIdx = full.indexOf(startMarker);
+  const endIdx = full.indexOf(endMarker);
+
+  if (startIdx !== -1 && endIdx !== -1) {
+    _cachedPrinciplesBlock = full.slice(startIdx, endIdx).trim();
+  } else {
+    _cachedPrinciplesBlock = "";
+  }
+  return _cachedPrinciplesBlock;
+}
+
+export function buildRegenerateFullScriptPrompt(input: {
+  analysis: ProductAnalysis;
+  setup: SetupShooting;
+  dubbing: "Suara sendiri" | "Suara AI";
+  mode: "total" | "same_angle";
+  currentScript: Script;
+  forbiddenAngles?: string[];
+  durasi?: string;
+}): string {
+  const { analysis, setup, dubbing, mode, currentScript, forbiddenAngles, durasi } = input;
+  const fl = analysis.faktaLangsung;
+  const ia = analysis.inferensiAman;
+  const is_ = analysis.interpretasiStrategis;
+
+  const forbiddenAnglesList = (forbiddenAngles || [])
+    .map((a) => a?.trim())
+    .filter(Boolean);
+
+  let modeInstruction = "";
+  if (mode === "same_angle") {
+    modeInstruction = `
+═══════════════════════════════════════════════════════
+MODE REGENERASI: ANGLE SAMA (ANGLE DIKUNCI)
+═══════════════════════════════════════════════════════
+- ANGLE TERKUNCI (WAJIB DIGUNAKAN PERSIS):
+  "${currentScript.angle}"
+- TUGAS UTAMA: Tulis ulang hook, narasi & footage, CTA, caption, dan hashtags dengan eksekusi kreatif baru yang segar.
+- JANGAN MENGULANG EKSEKUSI LAMA:
+  * Hook lama yang harus dihindari: "${currentScript.hook}"
+  * Narasi lama yang harus dihindari: "${currentScript.narasi}"
+  * CTA lama: "${currentScript.cta}"
+- Seluruh bagian baru harus saling koheren, terpadu, dan mendukung angle yang dikunci tersebut.
+`;
+  } else {
+    const forbiddenText = forbiddenAnglesList.length > 0
+      ? forbiddenAnglesList.map((a) => `- "${a}"`).join("\n")
+      : `- "${currentScript.angle}"`;
+
+    modeInstruction = `
+═══════════════════════════════════════════════════════
+MODE REGENERASI: GANTI TOTAL (ANGLE BARU & SELURUH BAGIAN BARU)
+═══════════════════════════════════════════════════════
+- TUGAS UTAMA: Rancang angle penjualan baru yang substantif beserta seluruh bagian (hook, narasi, footage, CTA, caption, hashtags) yang koheren dalam satu konsep.
+- DAFTAR ANGLE TERLARANG (DILARANG KERAS MENGGUNAKAN ANGLE BERIKUT ATAU PARAFRASENYA):
+${forbiddenText}
+- Hasil angle harus benar-benar berbeda sudut pandangnya dari angle yang dilarang di atas.
+`;
+  }
+
+  const sharedPrinciples = getSharedPrinciplesBlock();
+
+  return `
+Kamu adalah scriptwriter video pendek affiliate TikTok terbaik di Indonesia,
+spesialis membuat naskah yang sangat natural, faktual, dan menghasilkan konversi tinggi
+untuk solo creator.
+
+TUGAS: Hasilkan TEPAT 1 (SATU) script utuh baru dalam satu generasi yang saling terhubung erat dan koheren antara angle, hook, narasi & footage, CTA, dan caption.
+
+${modeInstruction}
+
+═══════════════════════════════════════════════════════
+DATA PRODUK — TIGA LEVEL EPISTEMIC
+═══════════════════════════════════════════════════════
+
+LEVEL 1 — FAKTA LANGSUNG
+(Sumber kebenaran tertinggi. Gunakan langsung sebagai fakta dalam narasi.)
+
+- Produk: "${fl.produk}"
+- Fitur: ${JSON.stringify(fl.fitur)}
+- Spesifikasi:
+  Gunakan HANYA versi "awam" dari setiap spesifikasi dalam narasi.
+  Versi "teknis" (angka asli) tidak boleh disebutkan di narasi kecuali angkanya sudah bermakna langsung bagi orang awam (contoh: harga, ukuran fisik, jumlah item).
+  ${JSON.stringify(fl.spesifikasi, null, 2)}
+- Cara Penggunaan: ${JSON.stringify(fl.caraPenggunaan)}
+- Informasi Penting: "${fl.informasiPenting}"
+- Harga/Promo: "${fl.hargaPromo}"
+
+LEVEL 2 — INFERENSI AMAN
+(Boleh digunakan sebagai dasar narasi. Bukan fakta keras.)
+
+- Kategori Produk: "${ia.kategoriProduk}"
+- Fungsi Utama: "${ia.fungsiUtama}"
+
+LEVEL 3 — INTERPRETASI STRATEGIS
+(Gunakan hanya untuk memilih angle dan membangun konteks.
+Jangan ubah menjadi klaim keras.
+Jika bertentangan dengan Level 1, abaikan atau formulasikan lebih aman.)
+
+- Target Pengguna: "${is_.targetPengguna}"
+- Masalah yang Diselesaikan: "${is_.masalahYangDiselesaikan}"
+- Manfaat: ${JSON.stringify(is_.manfaat)}
+- Keunggulan: ${JSON.stringify(is_.keunggulan)}
+
+═══════════════════════════════════════════════════════
+SETUP SHOOTING TERKUNCI — HARD PRODUCTION CONSTRAINT
+═══════════════════════════════════════════════════════
+
+${JSON.stringify(setup, null, 2)}
+
+Setup ini IMMUTABLE. Tidak boleh diubah, ditambah, diganti, atau diasumsikan oleh generator
+dalam kondisi apapun. Variasi hanya boleh pada: framing, angle, shot size, aksi demonstrasi,
+dan urutan shot.
+
+METODE DUBBING: ${dubbing}
+TARGET DURASI: ${durasi || "30–45 detik"}
+
+${sharedPrinciples}
+
+═══════════════════════════════════════════════════════
+KEMBALIKAN HANYA JSON MURNI — STRUKTUR PERSIS BERIKUT (1 SCRIPT LENGKAP)
+═══════════════════════════════════════════════════════
+
+{
+  "angle": "Judul angle penjualan untuk script ini",
+  "targetPengguna": "Siapa yang dituju oleh script ini",
+  "masalahUtama": "Masalah spesifik yang diangkat dalam script ini",
+  "benefitUtama": "Benefit utama yang difokuskan dalam script ini",
+  "hook": "Kalimat pembuka 3 detik pertama",
+  "narasi": "Naskah lengkap dengan penanda [1][2][3][4] di posisi yang tepat sesuai footage — termasuk CTA yang embedded secara natural di akhir",
+  "footage": [
+    "Instruksi visual adegan 1",
+    "Instruksi visual adegan 2",
+    "Instruksi visual adegan 3",
+    "Instruksi visual adegan 4"
+  ],
+  "cta": "Kalimat CTA — sama dengan yang di akhir narasi, diekstrak terpisah (wajib salah satu dari 6 CTA final disalin persis)",
+  "caption": "Satu kalimat caption",
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5"]
+}
+
+Seluruh teks dalam Bahasa Indonesia natural. Tanpa emoji.
+`.trim();
+}
+
 export function buildRegenerateHookPrompt(input: {
   analysis: ProductAnalysis;
   setup: SetupShooting;
   narasi: string;
   cta: string;
   angle: string;
+  footage?: string[];
+  caption?: string;
+  hashtags?: string[];
   previousHook?: string;
 }): string {
-  const { analysis, setup, narasi, cta, angle, previousHook } = input;
+  const { analysis, setup, narasi, cta, angle, footage, caption, previousHook } = input;
   const fl = analysis.faktaLangsung;
   const ia = analysis.inferensiAman;
   const is_ = analysis.interpretasiStrategis;
 
   const avoidInstruction = previousHook
     ? `
-Output sebelumnya yang HARUS DIHINDARI:
+Output hook sebelumnya yang HARUS DIHINDARI:
 "${previousHook}"
 Hasilkan hook yang berbeda — gunakan tipe hook yang berbeda,
 sudut pandang yang berbeda, atau struktur kalimat yang tidak mengulang di atas.
@@ -701,10 +887,12 @@ sudut pandang yang berbeda, atau struktur kalimat yang tidak mengulang di atas.
   return `
 Kamu adalah scriptwriter TikTok affiliate Indonesia.
 
-Berikut script yang sudah ada:
-- Narasi: ${JSON.stringify(narasi)}
-- CTA: ${JSON.stringify(cta)}
+Berikut seluruh bagian script yang sedang tampil dan TIDAK BOLEH DIUBAH (konteks tetap):
 - Angle: ${JSON.stringify(angle)}
+- Narasi yang ada: ${JSON.stringify(narasi)}
+- Footage yang ada: ${JSON.stringify(footage || [])}
+- CTA yang ada: ${JSON.stringify(cta)}
+- Caption: ${JSON.stringify(caption || "")}
 
 ${avoidInstruction}
 
@@ -737,10 +925,11 @@ SETUP SHOOTING TERKUNCI (IMMUTABLE)
 ${JSON.stringify(setup, null, 2)}
 
 TUGAS: Hasilkan HANYA hook baru (kalimat pembuka 0-3 detik) yang:
-1. Nyambung dan konsisten dengan narasi dan CTA di atas
-2. Mengikuti salah satu dari 4 tipe hook yang tersedia (Tipe 1, 3, 4, atau 5)
-3. Tidak mengulang tipe hook yang sudah dipakai di script lain dalam batch ini
-4. Mengikuti semua prinsip dari buildGeneratePrompt
+1. Nyambung secara mutlak dengan nada, alur, rujukan visual footage [1], dan isi narasi yang tidak berubah di atas.
+2. Selaras dengan angle dan CTA yang sudah ada.
+3. Dilarang keras memunculkan klaim baru, angka baru, atau janji baru di luar fakta produk.
+4. Mengikuti salah satu dari 4 tipe hook yang tersedia (Tipe 1, 3, 4, atau 5).
+5. Menggunakan demonstrator POV ("guys", "kalian"). Panjang maksimal 2 kalimat pendek.
 
 ── 6. HOOK — 4 TIPE PSIKOLOGIS, PILIH YANG PALING COCOK ─
 Hook bukan soal formula. Hook adalah momen pertama yang membuat penonton memutuskan untuk tidak scroll.
@@ -786,17 +975,20 @@ export function buildRegenerateNarasiPrompt(input: {
   hook: string;
   cta: string;
   angle: string;
+  footage?: string[];
+  caption?: string;
+  hashtags?: string[];
   dubbing: "Suara sendiri" | "Suara AI";
   previousNarasi?: string;
 }): string {
-  const { analysis, setup, hook, cta, angle, dubbing, previousNarasi } = input;
+  const { analysis, setup, hook, cta, angle, caption, dubbing, previousNarasi } = input;
   const fl = analysis.faktaLangsung;
   const ia = analysis.inferensiAman;
   const is_ = analysis.interpretasiStrategis;
 
   const avoidInstruction = previousNarasi
     ? `
-Output sebelumnya yang HARUS DIHINDARI:
+Output narasi sebelumnya yang HARUS DIHINDARI:
 "${previousNarasi}"
 Hasilkan narasi yang berbeda — variasikan urutan demonstrasi,
 cara menjelaskan fitur, atau momen yang difokuskan.
@@ -807,10 +999,11 @@ Jangan mengulang struktur kalimat dari narasi di atas.
   return `
 Kamu adalah scriptwriter TikTok affiliate Indonesia.
 
-Berikut elemen script yang sudah ada dan TIDAK BOLEH DIUBAH:
-- Hook: ${JSON.stringify(hook)}
-- CTA: ${JSON.stringify(cta)}
+Berikut seluruh bagian script yang sedang tampil dan TIDAK BOLEH DIUBAH (konteks tetap):
 - Angle: ${JSON.stringify(angle)}
+- Hook (kalimat pembuka detik 0-3): ${JSON.stringify(hook)}
+- CTA (kalimat ajakan di akhir): ${JSON.stringify(cta)}
+- Caption: ${JSON.stringify(caption || "")}
 
 ${avoidInstruction}
 
@@ -846,11 +1039,11 @@ ${JSON.stringify(setup, null, 2)}
 
 Metode dubbing: ${dubbing}
 
-TUGAS: Hasilkan HANYA narasi baru dengan ketentuan:
-1. Dimulai dari hook yang ada sebagai penanda [1]
-2. Berakhir mengarah secara natural ke CTA yang ada
-3. Menggunakan penanda [1][2][3][4] sesuai footage
-4. Mengikuti semua prinsip dari buildGeneratePrompt
+TUGAS: Hasilkan HANYA narasi dan footage baru yang:
+1. Dimulai secara mulus dari hook yang ada sebagai bagian pembuka adegan [1].
+2. Berakhir mengalir secara natural dan presisi menuju kalimat CTA yang sudah ada di atas.
+3. Tetap menjaga nada, alur, rujukan visual, dan tidak memunculkan klaim baru di luar fakta produk.
+4. Menggunakan penanda [1][2][3][4] sesuai footage instruksi visual.
 
 ── PRINSIP NARASI WAJIB ──
 - CLAIM TRANSFORMATION RULE: Semua klaim dapat ditelusuri ke Level 1 atau Level 2.
@@ -883,10 +1076,13 @@ export function buildRegenerateCtaPrompt(input: {
   hook: string;
   narasi: string;
   angle: string;
+  footage?: string[];
+  caption?: string;
+  hashtags?: string[];
   previousCta?: string;
   targetType?: number;
 }): string {
-  const { analysis, hook, narasi, angle, previousCta } = input;
+  const { analysis, hook, narasi, angle, footage, caption, previousCta } = input;
   const fl = analysis.faktaLangsung;
 
   let resolvedTargetType = input.targetType;
@@ -904,10 +1100,12 @@ CTA sebelumnya yang HARUS DIHINDARI: "${previousCta}"`
   return `
 Kamu adalah scriptwriter TikTok affiliate Indonesia.
 
-Berikut elemen script yang sudah ada dan TIDAK BOLEH DIUBAH:
+Berikut seluruh elemen script yang sedang tampil dan TIDAK BOLEH DIUBAH:
+- Angle: ${JSON.stringify(angle)}
 - Hook: ${JSON.stringify(hook)}
 - Narasi: ${JSON.stringify(narasi)}
-- Angle: ${JSON.stringify(angle)}
+- Footage: ${JSON.stringify(footage || [])}
+- Caption: ${JSON.stringify(caption || "")}
 
 Berikut data produk:
 - Produk: "${fl.produk}"
@@ -920,6 +1118,7 @@ ${dynamicTargetInstruction}
 
 CTA setiap script WAJIB salah satu dari enam kalimat di bawah, disalin persis
 tanpa perubahan apa pun. Dilarang membuat CTA sendiri di luar daftar ini.
+CTA baru harus nyambung secara nada dengan alur kalimat penutup narasi di atas.
 
 TIPE 1 — SKEPTIS / PROVOKASI EGO (nge-tes penonton)
 Memicu orang yang gengsi atau penasaran karena merasa ditantang.

@@ -4,6 +4,7 @@ import {
   buildAnalyzePrompt,
   buildSetupPrompt,
   buildGeneratePrompt,
+  buildRegenerateFullScriptPrompt,
   buildRegenerateHookPrompt,
   buildRegenerateNarasiPrompt,
   buildRegenerateCtaPrompt,
@@ -15,6 +16,7 @@ import {
   validateProductAnalysis,
   validateSetupShooting,
   validateGeneratedResult,
+  validateScript,
 } from "@/lib/validation";
 
 export async function POST(request: NextRequest) {
@@ -210,10 +212,105 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, data: validation.data });
     }
 
-    if (action === "regenerate_hook") {
-      const { analysis, setup, narasi, cta, angle, previousHook } = payload;
+    if (action === "regenerate_full_script") {
+      const {
+        analysis,
+        setup,
+        dubbing,
+        durasi,
+        mode,
+        currentScript,
+        forbiddenAngles,
+      } = payload;
 
-      if (!analysis || !setup || typeof narasi !== "string" || typeof cta !== "string") {
+      if (!analysis || !setup || !dubbing || !currentScript) {
+        return NextResponse.json(
+          { success: false, message: "Data tidak lengkap untuk regenerasi script utuh." },
+          { status: 400 }
+        );
+      }
+
+      const prompt = buildRegenerateFullScriptPrompt({
+        analysis,
+        setup,
+        dubbing: dubbing === "Suara AI" ? "Suara AI" : "Suara sendiri",
+        mode: mode === "same_angle" ? "same_angle" : "total",
+        currentScript,
+        forbiddenAngles: Array.isArray(forbiddenAngles) ? forbiddenAngles : [],
+        durasi: typeof durasi === "string" ? durasi : "30-45 detik",
+      });
+
+      const rawData = await callGeminiJSON({
+        apiKey: cleanKey,
+        prompt,
+        model: requestedModel,
+      });
+
+      // Handle rawData if wrapped in { scripts: [...] } or direct script object
+      const candidateScript = Array.isArray(rawData?.scripts) && rawData.scripts.length > 0
+        ? rawData.scripts[0]
+        : (typeof rawData === "object" && rawData !== null ? rawData : null);
+
+      if (!candidateScript) {
+        return NextResponse.json(
+          { success: false, message: "Gagal menghasilkan script utuh dari AI." },
+          { status: 502 }
+        );
+      }
+
+      // Validasi single script menggunakan validateScript
+      const validation = validateScript(candidateScript, 0);
+      if (validation.errors.length > 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Hasil regenerasi script tidak valid: ${validation.errors.join(" ")}`,
+          },
+          { status: 502 }
+        );
+      }
+
+      const validated = validation.script;
+
+      // Pastikan CTA script adalah salah satu dari 6 CTA final
+      const rawCta = validated.cta || "";
+      const matched = FINAL_CTAS.find(
+        (c) => normalizeForMatch(c.text) === normalizeForMatch(rawCta)
+      );
+      if (matched) {
+        validated.cta = matched.text;
+      } else {
+        validated.cta = getNextCta(currentScript.cta);
+      }
+
+      // Jika mode === "same_angle", pastikan angle terkunci pada angle lama
+      if (mode === "same_angle") {
+        validated.angle = currentScript.angle;
+      }
+
+      return NextResponse.json({ success: true, data: { script: validated } });
+    }
+
+    if (action === "regenerate_hook") {
+      const {
+        analysis,
+        setup,
+        narasi: rawNarasi,
+        cta: rawCta,
+        angle: rawAngle,
+        footage: rawFootage,
+        caption: rawCaption,
+        previousHook,
+        currentScript,
+      } = payload;
+
+      const narasi = typeof currentScript?.narasi === "string" ? currentScript.narasi : (typeof rawNarasi === "string" ? rawNarasi : "");
+      const cta = typeof currentScript?.cta === "string" ? currentScript.cta : (typeof rawCta === "string" ? rawCta : "");
+      const angle = typeof currentScript?.angle === "string" ? currentScript.angle : (typeof rawAngle === "string" ? rawAngle : "");
+      const footage = Array.isArray(currentScript?.footage) ? currentScript.footage : (Array.isArray(rawFootage) ? rawFootage : []);
+      const caption = typeof currentScript?.caption === "string" ? currentScript.caption : (typeof rawCaption === "string" ? rawCaption : "");
+
+      if (!analysis || !setup || !narasi || !cta) {
         return NextResponse.json(
           { success: false, message: "Data tidak lengkap untuk regenerasi hook." },
           { status: 400 }
@@ -225,8 +322,10 @@ export async function POST(request: NextRequest) {
         setup,
         narasi,
         cta,
-        angle: angle || "",
-        previousHook: typeof previousHook === "string" ? previousHook : undefined,
+        angle,
+        footage,
+        caption,
+        previousHook: typeof previousHook === "string" ? previousHook : (typeof currentScript?.hook === "string" ? currentScript.hook : undefined),
       });
 
       const data = await callGeminiJSON({
@@ -244,13 +343,42 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({ success: true, data: { hook } });
+      // Timpa hanya bagian hook di sisi server, bagian lain dipertahankan persis
+      const baseScript = currentScript && typeof currentScript === "object" ? currentScript : {
+        angle,
+        narasi,
+        cta,
+        footage,
+        caption,
+      };
+      const updatedScript = {
+        ...baseScript,
+        hook,
+      };
+
+      return NextResponse.json({ success: true, data: { hook, script: updatedScript } });
     }
 
     if (action === "regenerate_narasi") {
-      const { analysis, setup, hook, cta, angle, dubbing, previousNarasi } = payload;
+      const {
+        analysis,
+        setup,
+        hook: rawHook,
+        cta: rawCta,
+        angle: rawAngle,
+        caption: rawCaption,
+        dubbing: rawDubbing,
+        previousNarasi,
+        currentScript,
+      } = payload;
 
-      if (!analysis || !setup || typeof hook !== "string" || typeof cta !== "string") {
+      const hook = typeof currentScript?.hook === "string" ? currentScript.hook : (typeof rawHook === "string" ? rawHook : "");
+      const cta = typeof currentScript?.cta === "string" ? currentScript.cta : (typeof rawCta === "string" ? rawCta : "");
+      const angle = typeof currentScript?.angle === "string" ? currentScript.angle : (typeof rawAngle === "string" ? rawAngle : "");
+      const caption = typeof currentScript?.caption === "string" ? currentScript.caption : (typeof rawCaption === "string" ? rawCaption : "");
+      const dubbing = rawDubbing === "Suara AI" ? "Suara AI" : "Suara sendiri";
+
+      if (!analysis || !setup || !hook || !cta) {
         return NextResponse.json(
           { success: false, message: "Data tidak lengkap untuk regenerasi narasi." },
           { status: 400 }
@@ -262,9 +390,10 @@ export async function POST(request: NextRequest) {
         setup,
         hook,
         cta,
-        angle: angle || "",
-        dubbing: dubbing === "Suara AI" ? "Suara AI" : "Suara sendiri",
-        previousNarasi: typeof previousNarasi === "string" ? previousNarasi : undefined,
+        angle,
+        caption,
+        dubbing,
+        previousNarasi: typeof previousNarasi === "string" ? previousNarasi : (typeof currentScript?.narasi === "string" ? currentScript.narasi : undefined),
       });
 
       const data = await callGeminiJSON({
@@ -284,13 +413,44 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({ success: true, data: { narasi, footage } });
+      // Timpa hanya narasi & footage di sisi server, bagian lain dipertahankan persis
+      const baseScript = currentScript && typeof currentScript === "object" ? currentScript : {
+        angle,
+        hook,
+        cta,
+        caption,
+      };
+      const updatedScript = {
+        ...baseScript,
+        narasi,
+        footage: footage.length > 0 ? footage : (baseScript.footage || []),
+      };
+
+      return NextResponse.json({ success: true, data: { narasi, footage, script: updatedScript } });
     }
 
     if (action === "regenerate_cta") {
-      const { analysis, setup, hook, narasi, angle, previousCta, targetType } = payload;
+      const {
+        analysis,
+        setup,
+        hook: rawHook,
+        narasi: rawNarasi,
+        angle: rawAngle,
+        footage: rawFootage,
+        caption: rawCaption,
+        previousCta,
+        targetType,
+        currentScript,
+      } = payload;
 
-      if (!analysis || typeof hook !== "string" || typeof narasi !== "string") {
+      const hook = typeof currentScript?.hook === "string" ? currentScript.hook : (typeof rawHook === "string" ? rawHook : "");
+      const narasi = typeof currentScript?.narasi === "string" ? currentScript.narasi : (typeof rawNarasi === "string" ? rawNarasi : "");
+      const angle = typeof currentScript?.angle === "string" ? currentScript.angle : (typeof rawAngle === "string" ? rawAngle : "");
+      const footage = Array.isArray(currentScript?.footage) ? currentScript.footage : (Array.isArray(rawFootage) ? rawFootage : []);
+      const caption = typeof currentScript?.caption === "string" ? currentScript.caption : (typeof rawCaption === "string" ? rawCaption : "");
+      const effectivePrevCta = typeof previousCta === "string" ? previousCta : (typeof currentScript?.cta === "string" ? currentScript.cta : undefined);
+
+      if (!analysis || !hook || !narasi) {
         return NextResponse.json(
           { success: false, message: "Data tidak lengkap untuk regenerasi CTA." },
           { status: 400 }
@@ -302,8 +462,10 @@ export async function POST(request: NextRequest) {
         setup,
         hook,
         narasi,
-        angle: angle || "",
-        previousCta: typeof previousCta === "string" ? previousCta : undefined,
+        angle,
+        footage,
+        caption,
+        previousCta: effectivePrevCta,
         targetType: typeof targetType === "number" ? targetType : undefined,
       });
 
@@ -319,7 +481,7 @@ export async function POST(request: NextRequest) {
       const matched = FINAL_CTAS.find(
         (c) => normalizeForMatch(c.text) === normalizeForMatch(rawCta)
       );
-      const cta = matched ? matched.text : getNextCta(previousCta, targetType);
+      const cta = matched ? matched.text : getNextCta(effectivePrevCta, targetType);
 
       if (!cta) {
         return NextResponse.json(
@@ -328,7 +490,20 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      return NextResponse.json({ success: true, data: { cta } });
+      // Timpa hanya CTA di sisi server, bagian lain dipertahankan persis
+      const baseScript = currentScript && typeof currentScript === "object" ? currentScript : {
+        angle,
+        hook,
+        narasi,
+        footage,
+        caption,
+      };
+      const updatedScript = {
+        ...baseScript,
+        cta,
+      };
+
+      return NextResponse.json({ success: true, data: { cta, script: updatedScript } });
     }
 
     return NextResponse.json(

@@ -42,6 +42,8 @@ export interface SetupShooting {
   keterbatasan: string;
 }
 
+export type ScriptSnapshot = Omit<Script, "history">;
+
 export interface Script {
   angle: string;
   targetPengguna: string;
@@ -54,6 +56,7 @@ export interface Script {
   caption: string;
   hashtags: string[];
   ctaEmbedded?: string;
+  history?: ScriptSnapshot[];
 }
 
 export interface GeneratedResult {

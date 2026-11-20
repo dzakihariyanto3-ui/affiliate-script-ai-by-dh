@@ -2,10 +2,21 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { GeneratedResult, Script } from "@/lib/types";
+import { GeneratedResult, Script, ScriptSnapshot } from "@/lib/types";
 import { formatAllResult, formatScript, getDisplayNarasi } from "@/lib/format";
 import { getCtaType, getNextCta } from "@/lib/prompt-engine";
 import { useApp } from "@/lib/app-context";
+
+function createSnapshot(s: Script): ScriptSnapshot {
+  const { history, ...rest } = s;
+  return rest;
+}
+
+function pushHistory(s: Script): ScriptSnapshot[] {
+  const currentSnapshot = createSnapshot(s);
+  const existing = s.history || [];
+  return [...existing, currentSnapshot].slice(-3);
+}
 
 async function copyToClipboard(text: string): Promise<boolean> {
   if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
@@ -47,6 +58,20 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
   const [accordionOpen, setAccordionOpen] = useState(false);
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   const [regenerateError, setRegenerateError] = useState<string | null>(null);
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (openMenuIndex !== null) {
+        const target = e.target as HTMLElement;
+        if (!target.closest(".menu-container-ganti-semua")) {
+          setOpenMenuIndex(null);
+        }
+      }
+    };
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, [openMenuIndex]);
 
   useEffect(() => {
     setScripts((prev) => {
@@ -54,8 +79,9 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
         const existing = prev[idx];
         return {
           ...s,
-          // Pertahankan ctaEmbedded yang sudah ada agar narasi tidak kembali memuat CTA lama
+          // Pertahankan ctaEmbedded dan history yang sudah ada
           ctaEmbedded: existing?.ctaEmbedded || s.ctaEmbedded || s.cta,
+          history: existing?.history || s.history,
         };
       });
     });
@@ -91,6 +117,96 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
     }
   };
 
+  const handleUndo = (index: number) => {
+    setScripts((prev) => {
+      const target = prev[index];
+      if (!target || !target.history || target.history.length === 0) return prev;
+      const historyList = [...target.history];
+      const previousSnapshot = historyList.pop()!;
+      const next = [...prev];
+      next[index] = {
+        ...previousSnapshot,
+        history: historyList,
+        ctaEmbedded: previousSnapshot.ctaEmbedded || previousSnapshot.cta,
+      };
+      if (projectResult) {
+        setProjectResult({ ...projectResult, scripts: next });
+      }
+      return next;
+    });
+  };
+
+  const handleRegenerateFullScript = async (
+    index: number,
+    mode: "total" | "same_angle"
+  ) => {
+    setOpenMenuIndex(null);
+    const script = scripts[index];
+    if (!script) return;
+    if (!apiKey) {
+      setRegenerateError("API Key belum terhubung. Silakan atur di menu Pengaturan.");
+      return;
+    }
+
+    const key = `${index}-all`;
+    if (loadingMap[key]) return;
+
+    setLoadingMap((prev) => ({ ...prev, [key]: true }));
+    setRegenerateError(null);
+
+    // Kirim angle dari semua script lain di proyek yang sama, ditambah angle lama script ini
+    const forbiddenAngles = scripts.map((s) => s.angle);
+
+    try {
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "regenerate_full_script",
+          apiKey,
+          analysis: result.analisisProduk,
+          setup: result.setupShooting,
+          dubbing: result.dubbing || "Suara sendiri",
+          durasi: "30-45 detik",
+          mode,
+          currentScript: script,
+          forbiddenAngles,
+        }),
+      });
+
+      const resData = await response.json();
+      if (!response.ok || !resData.success || !resData.data?.script) {
+        throw new Error(resData.message || "Gagal menghasilkan script utuh baru dari AI.");
+      }
+
+      const newScript = resData.data.script;
+
+      setScripts((prev) => {
+        const next = [...prev];
+        const currentTarget = next[index];
+        const newHistory = pushHistory(currentTarget);
+
+        next[index] = {
+          ...newScript,
+          ctaEmbedded: newScript.cta,
+          history: newHistory,
+        };
+
+        if (projectResult) {
+          setProjectResult({ ...projectResult, scripts: next });
+        }
+        return next;
+      });
+    } catch (err) {
+      // Jika gagal, versi lama tetap utuh dan tidak ter-overwrite
+      setRegenerateError(
+        err instanceof Error ? err.message : "Gagal mengganti seluruh script."
+      );
+    } finally {
+      setLoadingMap((prev) => ({ ...prev, [key]: false }));
+    }
+  };
+
   const handleRegenerateHook = async (index: number) => {
     const script = scripts[index];
     if (!script) return;
@@ -114,9 +230,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
           apiKey,
           analysis: result.analisisProduk,
           setup: result.setupShooting,
-          narasi: script.narasi,
-          cta: script.cta,
-          angle: script.angle,
+          currentScript: script,
           previousHook: script.hook,
         }),
       });
@@ -129,7 +243,13 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       const newHook = resData.data.hook;
       setScripts((prev) => {
         const next = [...prev];
-        next[index] = { ...next[index], hook: newHook };
+        const currentTarget = next[index];
+        const newHistory = pushHistory(currentTarget);
+        next[index] = {
+          ...currentTarget,
+          hook: newHook,
+          history: newHistory,
+        };
         if (projectResult) {
           setProjectResult({ ...projectResult, scripts: next });
         }
@@ -167,9 +287,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
           apiKey,
           analysis: result.analisisProduk,
           setup: result.setupShooting,
-          hook: script.hook,
-          cta: script.cta,
-          angle: script.angle,
+          currentScript: script,
           dubbing: result.dubbing || "Suara sendiri",
           previousNarasi: script.narasi,
         }),
@@ -184,12 +302,15 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       const currentActiveCta = script.cta;
       setScripts((prev) => {
         const next = [...prev];
+        const currentTarget = next[index];
+        const newHistory = pushHistory(currentTarget);
         next[index] = {
-          ...next[index],
+          ...currentTarget,
           narasi: newNarasi,
-          footage: Array.isArray(newFootage) && newFootage.length > 0 ? newFootage : next[index].footage,
+          footage: Array.isArray(newFootage) && newFootage.length > 0 ? newFootage : currentTarget.footage,
           // Perbarui ctaEmbedded sesuai CTA yang aktif saat regenerasi narasi
           ctaEmbedded: currentActiveCta,
+          history: newHistory,
         };
         if (projectResult) {
           setProjectResult({ ...projectResult, scripts: next });
@@ -218,7 +339,9 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       const nextCta = getNextCta(script.cta, nextTargetType);
       setScripts((prev) => {
         const next = [...prev];
-        next[index] = { ...next[index], cta: nextCta };
+        const currentTarget = next[index];
+        const newHistory = pushHistory(currentTarget);
+        next[index] = { ...currentTarget, cta: nextCta, history: newHistory };
         if (projectResult) {
           setProjectResult({ ...projectResult, scripts: next });
         }
@@ -242,9 +365,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
           apiKey,
           analysis: result.analisisProduk,
           setup: result.setupShooting,
-          hook: script.hook,
-          narasi: script.narasi,
-          angle: script.angle,
+          currentScript: script,
           previousCta: script.cta,
           targetType: nextTargetType,
         }),
@@ -258,7 +379,9 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       const newCta = resData.data.cta;
       setScripts((prev) => {
         const next = [...prev];
-        next[index] = { ...next[index], cta: newCta };
+        const currentTarget = next[index];
+        const newHistory = pushHistory(currentTarget);
+        next[index] = { ...currentTarget, cta: newCta, history: newHistory };
         if (projectResult) {
           setProjectResult({ ...projectResult, scripts: next });
         }
@@ -269,7 +392,9 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
       const fallbackCta = getNextCta(script.cta, nextTargetType);
       setScripts((prev) => {
         const next = [...prev];
-        next[index] = { ...next[index], cta: fallbackCta };
+        const currentTarget = next[index];
+        const newHistory = pushHistory(currentTarget);
+        next[index] = { ...currentTarget, cta: fallbackCta, history: newHistory };
         if (projectResult) {
           setProjectResult({ ...projectResult, scripts: next });
         }
@@ -510,9 +635,11 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
             {scripts.map((script, index) => {
               const scriptNumber = String(index + 1).padStart(2, "0");
               const isCopied = copiedIndex === index;
+              const isAllLoading = !!loadingMap[`${index}-all`];
               const isHookLoading = !!loadingMap[`${index}-hook`];
               const isNarasiLoading = !!loadingMap[`${index}-narasi`];
               const isCtaLoading = !!loadingMap[`${index}-cta`];
+              const isAnyCardLoading = isAllLoading || isHookLoading || isNarasiLoading || isCtaLoading;
 
               return (
                 <article
@@ -561,19 +688,168 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                       </h3>
                     </div>
 
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      onClick={() => handleCopySingle(index)}
-                      style={{ padding: "6px 14px", fontSize: "13px" }}
-                      title="Salin Script Ini"
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
-                        {isCopied ? "done" : "content_copy"}
-                      </span>
-                      {isCopied ? "Tersalin" : "Salin Script Ini"}
-                    </button>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                      {/* Tombol Batalkan (hanya muncul jika history ada) */}
+                      {script.history && script.history.length > 0 && (
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => handleUndo(index)}
+                          disabled={isAnyCardLoading}
+                          style={{
+                            padding: "6px 12px",
+                            fontSize: "12px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                          title={`Kembalikan ke versi sebelumnya (${script.history.length} tersimpan)`}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
+                            undo
+                          </span>
+                          Batalkan
+                        </button>
+                      )}
+
+                      {/* Tombol Ganti Semua dengan Menu Pilihan 2 Mode */}
+                      <div className="menu-container-ganti-semua" style={{ position: "relative" }}>
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuIndex(openMenuIndex === index ? null : index);
+                          }}
+                          disabled={isAnyCardLoading}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            padding: "6px 12px",
+                            fontSize: "12px",
+                            borderRadius: "var(--radius-sm)",
+                            cursor: isAnyCardLoading ? "not-allowed" : "pointer",
+                            opacity: isAnyCardLoading ? 0.6 : 1,
+                          }}
+                          title="Ganti Seluruh Script Sekaligus"
+                        >
+                          <span
+                            className={`material-symbols-outlined ${isAllLoading ? "spinner" : ""}`}
+                            style={{ fontSize: "16px" }}
+                          >
+                            {isAllLoading ? "progress_activity" : "refresh"}
+                          </span>
+                          <span>{isAllLoading ? "Memuat..." : "Ganti Semua"}</span>
+                          <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
+                            {openMenuIndex === index ? "expand_less" : "expand_more"}
+                          </span>
+                        </button>
+
+                        {/* Dropdown Menu Mode */}
+                        {openMenuIndex === index && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              right: 0,
+                              top: "calc(100% + 6px)",
+                              backgroundColor: "var(--surface-container-lowest)",
+                              border: "1px solid var(--outline-variant)",
+                              borderRadius: "var(--radius-sm)",
+                              boxShadow: "0 4px 14px rgba(0,0,0,0.12)",
+                              zIndex: 50,
+                              minWidth: "220px",
+                              padding: "4px 0",
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => handleRegenerateFullScript(index, "total")}
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                padding: "8px 14px",
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                textAlign: "left",
+                                width: "100%",
+                              }}
+                            >
+                              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--primary)" }}>
+                                Ganti Total
+                              </span>
+                              <span style={{ fontSize: "11px", color: "var(--on-surface-variant)" }}>
+                                Angle baru & semua bagian baru
+                              </span>
+                            </button>
+                            <div style={{ height: "1px", backgroundColor: "var(--outline-variant)", margin: "2px 0" }} />
+                            <button
+                              type="button"
+                              onClick={() => handleRegenerateFullScript(index, "same_angle")}
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                padding: "8px 14px",
+                                background: "none",
+                                border: "none",
+                                cursor: "pointer",
+                                textAlign: "left",
+                                width: "100%",
+                              }}
+                            >
+                              <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--primary)" }}>
+                                Angle Sama
+                              </span>
+                              <span style={{ fontSize: "11px", color: "var(--on-surface-variant)" }}>
+                                Kunci angle, tulis ulang eksekusi
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => handleCopySingle(index)}
+                        style={{ padding: "6px 14px", fontSize: "13px" }}
+                        title="Salin Script Ini"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
+                          {isCopied ? "done" : "content_copy"}
+                        </span>
+                        {isCopied ? "Tersalin" : "Salin Script Ini"}
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Loading banner saat proses Ganti Semua */}
+                  {isAllLoading && (
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                        backgroundColor: "var(--surface-container-low)",
+                        border: "1px dashed var(--secondary)",
+                        borderRadius: "var(--radius-sm)",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        color: "var(--primary)",
+                      }}
+                    >
+                      <span className="material-symbols-outlined spinner" style={{ fontSize: "18px", color: "var(--secondary)" }}>
+                        progress_activity
+                      </span>
+                      <span className="font-caption" style={{ fontSize: "13px" }}>
+                        AI sedang meregenerasi script utuh (angle, hook, narasi, footage, CTA, dan caption)...
+                      </span>
+                    </div>
+                  )}
 
                   {/* Hook Box */}
                   <div
@@ -601,7 +877,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                       <button
                         type="button"
                         onClick={() => handleRegenerateHook(index)}
-                        disabled={isHookLoading}
+                        disabled={isHookLoading || isAllLoading}
                         className="btn-secondary"
                         style={{
                           display: "inline-flex",
@@ -611,8 +887,8 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                           fontSize: "12px",
                           lineHeight: 1,
                           borderRadius: "var(--radius-sm)",
-                          cursor: isHookLoading ? "not-allowed" : "pointer",
-                          opacity: isHookLoading ? 0.6 : 1,
+                          cursor: (isHookLoading || isAllLoading) ? "not-allowed" : "pointer",
+                          opacity: (isHookLoading || isAllLoading) ? 0.6 : 1,
                         }}
                         title="Ganti Hook"
                       >
@@ -664,7 +940,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                       <button
                         type="button"
                         onClick={() => handleRegenerateNarasi(index)}
-                        disabled={isNarasiLoading}
+                        disabled={isNarasiLoading || isAllLoading}
                         className="btn-secondary"
                         style={{
                           display: "inline-flex",
@@ -674,8 +950,8 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                           fontSize: "12px",
                           lineHeight: 1,
                           borderRadius: "var(--radius-sm)",
-                          cursor: isNarasiLoading ? "not-allowed" : "pointer",
-                          opacity: isNarasiLoading ? 0.6 : 1,
+                          cursor: (isNarasiLoading || isAllLoading) ? "not-allowed" : "pointer",
+                          opacity: (isNarasiLoading || isAllLoading) ? 0.6 : 1,
                         }}
                         title="Ganti Narasi & Footage"
                       >
@@ -792,7 +1068,7 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                         <button
                           type="button"
                           onClick={() => handleRegenerateCta(index)}
-                          disabled={isCtaLoading}
+                          disabled={isCtaLoading || isAllLoading}
                           className="btn-secondary"
                           style={{
                             display: "inline-flex",
@@ -802,8 +1078,8 @@ export default function ResultView({ result }: { result: GeneratedResult }) {
                             fontSize: "12px",
                             lineHeight: 1,
                             borderRadius: "var(--radius-sm)",
-                            cursor: isCtaLoading ? "not-allowed" : "pointer",
-                            opacity: isCtaLoading ? 0.6 : 1,
+                            cursor: (isCtaLoading || isAllLoading) ? "not-allowed" : "pointer",
+                            opacity: (isCtaLoading || isAllLoading) ? 0.6 : 1,
                           }}
                           title="Ganti CTA"
                         >

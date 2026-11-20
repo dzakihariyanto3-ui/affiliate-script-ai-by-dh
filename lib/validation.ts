@@ -207,7 +207,7 @@ export function validateSetupShooting(data: any): {
   return { valid: false, errors, data: normalized };
 }
 
-function validateScript(script: any, index: number): { errors: string[]; script: Script } {
+export function validateScript(script: any, index: number): { errors: string[]; script: Script } {
   const errors: string[] = [];
   const no = index + 1;
 
